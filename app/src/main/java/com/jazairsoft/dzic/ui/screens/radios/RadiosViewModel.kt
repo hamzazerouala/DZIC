@@ -5,11 +5,16 @@ import androidx.lifecycle.viewModelScope
 import com.jazairsoft.dzic.data.local.FavoritesRepository
 import com.jazairsoft.dzic.data.local.PlaylistWithCount
 import com.jazairsoft.dzic.data.local.PlaylistsRepository
+import com.jazairsoft.dzic.data.remote.CountryDto
+import com.jazairsoft.dzic.data.remote.LanguageDto
 import com.jazairsoft.dzic.data.remote.RadioBrowserRepository
+import com.jazairsoft.dzic.domain.model.ArtistRadio
 import com.jazairsoft.dzic.domain.model.RadioCategory
 import com.jazairsoft.dzic.domain.model.Station
 import com.jazairsoft.dzic.playback.PlayerManager
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -18,13 +23,24 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/** Ce que la liste affiche actuellement. */
+sealed interface RadioFilter {
+    data object Algeria : RadioFilter
+    data class Category(val category: RadioCategory) : RadioFilter
+    data class Artist(val artist: ArtistRadio) : RadioFilter
+    data class Country(val code: String, val label: String) : RadioFilter
+    data class Language(val name: String) : RadioFilter
+    data class Search(val query: String) : RadioFilter
+}
+
 data class RadiosUiState(
+    val filter: RadioFilter = RadioFilter.Algeria,
+    val stations: List<Station> = emptyList(),
     val isLoading: Boolean = true,
     val error: Boolean = false,
-    val algerianStations: List<Station> = emptyList(),
-    val selectedCategory: RadioCategory? = null,
-    val categoryStations: List<Station> = emptyList(),
-    val isCategoryLoading: Boolean = false
+    val query: String = "",
+    val countries: List<CountryDto> = emptyList(),
+    val languages: List<LanguageDto> = emptyList()
 )
 
 @HiltViewModel
@@ -49,19 +65,37 @@ class RadiosViewModel @Inject constructor(
 
     val playerState = playerManager.state
 
+    private var searchJob: Job? = null
+
     init {
-        loadAlgeria()
+        apply(RadioFilter.Algeria)
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(
+                countries = repository.countries(),
+                languages = repository.languages()
+            )
+        }
     }
 
-    fun loadAlgeria(forceRefresh: Boolean = false) {
+    fun apply(filter: RadioFilter, forceRefresh: Boolean = false) {
+        searchJob?.cancel()
+        _uiState.value = _uiState.value.copy(filter = filter, isLoading = true, error = false)
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true, error = false)
-            runCatching { repository.algerianStations(forceRefresh) }
+            runCatching {
+                when (filter) {
+                    is RadioFilter.Algeria -> repository.algerianStations(forceRefresh)
+                    is RadioFilter.Category -> repository.categoryStations(filter.category, forceRefresh)
+                    is RadioFilter.Artist -> repository.search(filter.artist.query)
+                    is RadioFilter.Country -> repository.stationsOfCountry(filter.code, forceRefresh)
+                    is RadioFilter.Language -> repository.stationsOfLanguage(filter.name, forceRefresh)
+                    is RadioFilter.Search -> repository.search(filter.query)
+                }
+            }
                 .onSuccess { stations ->
                     _uiState.value = _uiState.value.copy(
+                        stations = stations,
                         isLoading = false,
-                        error = false,
-                        algerianStations = stations
+                        error = false
                     )
                 }
                 .onFailure {
@@ -70,26 +104,20 @@ class RadiosViewModel @Inject constructor(
         }
     }
 
-    fun selectCategory(category: RadioCategory?) {
-        if (category == null) {
-            _uiState.value = _uiState.value.copy(selectedCategory = null, categoryStations = emptyList())
+    fun onQueryChange(value: String) {
+        _uiState.value = _uiState.value.copy(query = value)
+        searchJob?.cancel()
+        if (value.trim().length < 2) {
+            if (_uiState.value.filter is RadioFilter.Search) apply(RadioFilter.Algeria)
             return
         }
-        _uiState.value = _uiState.value.copy(selectedCategory = category, isCategoryLoading = true)
-        viewModelScope.launch {
-            runCatching { repository.categoryStations(category) }
-                .onSuccess { stations ->
-                    _uiState.value = _uiState.value.copy(
-                        categoryStations = stations,
-                        isCategoryLoading = false,
-                        error = false
-                    )
-                }
-                .onFailure {
-                    _uiState.value = _uiState.value.copy(isCategoryLoading = false, error = true)
-                }
+        searchJob = viewModelScope.launch {
+            delay(350) // debounce : evite un appel API a chaque frappe
+            apply(RadioFilter.Search(value.trim()))
         }
     }
+
+    fun retry() = apply(_uiState.value.filter, forceRefresh = true)
 
     fun play(station: Station, queue: List<Station>) = playerManager.play(station, queue)
 

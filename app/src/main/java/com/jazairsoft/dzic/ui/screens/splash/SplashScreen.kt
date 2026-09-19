@@ -17,10 +17,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -44,13 +42,17 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.jazairsoft.dzic.R
 import com.jazairsoft.dzic.ui.components.AboutDialog
 import com.jazairsoft.dzic.ui.components.DzicLogo
 import com.jazairsoft.dzic.ui.theme.DzicGreen
 import com.jazairsoft.dzic.ui.theme.DzicNight
 import com.jazairsoft.dzic.ui.theme.DzicNightElevated
+import com.jazairsoft.dzic.ui.theme.DzicSand
 import kotlinx.coroutines.delay
 
 /**
@@ -83,11 +85,7 @@ fun SplashScreen(onFinished: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    listOf(DzicNightElevated, DzicNight, DzicNight)
-                )
-            )
+            .background(Brush.verticalGradient(listOf(DzicNightElevated, DzicNight, DzicNight)))
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null
@@ -111,28 +109,47 @@ fun SplashScreen(onFinished: () -> Unit) {
             modifier = Modifier
                 .align(Alignment.Center)
                 .alpha(contentAlpha)
-                .scale(contentScale),
+                .scale(contentScale)
+                .padding(horizontal = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            DzicLogo()
-            Spacer(modifier = Modifier.height(36.dp))
+            DzicLogo(showTagline = false)
+
+            Spacer(modifier = Modifier.height(22.dp))
+
+            // La promesse du produit, en grand : c'est ce qui le distingue.
+            Text(
+                text = stringResource(R.string.splash_promise),
+                fontSize = 26.sp,
+                lineHeight = 34.sp,
+                fontWeight = FontWeight.Bold,
+                color = DzicSand,
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(modifier = Modifier.height(14.dp))
+
+            Text(
+                text = stringResource(R.string.app_tagline),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(modifier = Modifier.height(30.dp))
             Equalizer()
         }
 
-        Column(
+        Text(
+            text = stringResource(R.string.splash_publisher),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .windowInsetsPadding(WindowInsets.systemBars)
-                .padding(bottom = 28.dp)
-                .alpha(contentAlpha),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = stringResource(R.string.splash_publisher),
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
+                .padding(bottom = 26.dp)
+                .alpha(contentAlpha)
+        )
     }
 
     if (showAbout) {
@@ -173,4 +190,4 @@ private fun Equalizer() {
     }
 }
 
-private const val AUTO_DISMISS_MS = 2100L
+private const val AUTO_DISMISS_MS = 2600L

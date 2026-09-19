@@ -3,6 +3,8 @@ package com.jazairsoft.dzic.ui.navigation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jazairsoft.dzic.data.local.FavoritesRepository
+import com.jazairsoft.dzic.data.remote.PodcastSelection
+import com.jazairsoft.dzic.domain.model.PodcastShow
 import com.jazairsoft.dzic.playback.PlayerManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
@@ -14,7 +16,8 @@ import javax.inject.Inject
 @HiltViewModel
 class AppViewModel @Inject constructor(
     private val playerManager: PlayerManager,
-    private val favoritesRepository: FavoritesRepository
+    private val favoritesRepository: FavoritesRepository,
+    private val podcastSelection: PodcastSelection
 ) : ViewModel() {
 
     val playerState = playerManager.state
@@ -27,6 +30,11 @@ class AppViewModel @Inject constructor(
     fun previous() = playerManager.previous()
     fun stop() = playerManager.stop()
     fun clearError() = playerManager.clearError()
+    fun seekTo(positionMs: Long) = playerManager.seekTo(positionMs)
+
+    fun selectShow(show: PodcastShow) {
+        podcastSelection.current = show
+    }
 
     fun toggleFavoriteCurrent() {
         val station = playerManager.state.value.station ?: return

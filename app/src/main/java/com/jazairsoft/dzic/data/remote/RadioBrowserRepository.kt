@@ -15,16 +15,54 @@ class RadioBrowserRepository @Inject constructor(
     private val api: RadioBrowserApi
 ) {
 
-    /** Cache memoire simple : evite de re-interroger l'API a chaque aller-retour d'onglet. */
     private val categoryCache = mutableMapOf<String, List<Station>>()
+    private val countryCache = mutableMapOf<String, List<Station>>()
+    private val languageCache = mutableMapOf<String, List<Station>>()
     private var algeriaCache: List<Station>? = null
+    private var countriesCache: List<CountryDto>? = null
+    private var languagesCache: List<LanguageDto>? = null
 
-    suspend fun algerianStations(forceRefresh: Boolean = false): List<Station> {
-        algeriaCache?.takeIf { !forceRefresh && it.isNotEmpty() }?.let { return it }
+    suspend fun algerianStations(forceRefresh: Boolean = false): List<Station> =
+        stationsOfCountry("DZ", forceRefresh).also { algeriaCache = it }
+
+    suspend fun stationsOfCountry(code: String, forceRefresh: Boolean = false): List<Station> {
+        countryCache[code]?.takeIf { !forceRefresh && it.isNotEmpty() }?.let { return it }
         val result = withContext(Dispatchers.IO) {
-            api.stationsByCountryCode("DZ").toStations()
+            api.stationsByCountryCode(code).toStations()
         }
-        algeriaCache = result
+        countryCache[code] = result
+        return result
+    }
+
+    suspend fun stationsOfLanguage(language: String, forceRefresh: Boolean = false): List<Station> {
+        languageCache[language]?.takeIf { !forceRefresh && it.isNotEmpty() }?.let { return it }
+        val result = withContext(Dispatchers.IO) {
+            api.stationsByLanguage(language).toStations()
+        }
+        languageCache[language] = result
+        return result
+    }
+
+    /** Pays tries par nombre de stations : les plus fournis en premier. */
+    suspend fun countries(): List<CountryDto> {
+        countriesCache?.let { return it }
+        val result = withContext(Dispatchers.IO) {
+            runCatching { api.countries() }.getOrDefault(emptyList())
+                .filter { !it.name.isNullOrBlank() && !it.code.isNullOrBlank() && (it.stationCount ?: 0) > 0 }
+                .sortedByDescending { it.stationCount ?: 0 }
+        }
+        countriesCache = result
+        return result
+    }
+
+    suspend fun languages(): List<LanguageDto> {
+        languagesCache?.let { return it }
+        val result = withContext(Dispatchers.IO) {
+            runCatching { api.languages() }.getOrDefault(emptyList())
+                .filter { !it.name.isNullOrBlank() && (it.stationCount ?: 0) > 0 }
+                .sortedByDescending { it.stationCount ?: 0 }
+        }
+        languagesCache = result
         return result
     }
 
@@ -66,6 +104,8 @@ class RadioBrowserRepository @Inject constructor(
 
     fun clearCache() {
         categoryCache.clear()
+        countryCache.clear()
+        languageCache.clear()
         algeriaCache = null
     }
 
@@ -77,4 +117,3 @@ class RadioBrowserRepository @Inject constructor(
     private fun Station.matches(category: RadioCategory): Boolean =
         tags.any { tag -> category.matchTags.any { m -> tag == m || tag.contains(m) } }
 }
-

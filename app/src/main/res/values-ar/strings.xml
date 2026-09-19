@@ -76,4 +76,39 @@
     <string name="about_version">الإصدار</string>
     <string name="about_sources">المحطات مقدّمة من Radio Browser، قاعدة بيانات مجتمعية مفتوحة. بدون إعلانات، بدون حساب، وبدون جمع بيانات.</string>
     <string name="splash_publisher">Jazairsoft · www.jazairsoft.com</string>
+
+    <string name="tab_music">موسيقى</string>
+    <string name="tab_podcasts">منطوق</string>
+    <string name="splash_promise">بدون حساب\nبدون اشتراك\nمجاني مدى الحياة</string>
+
+    <string name="filter_country">البلد</string>
+    <string name="filter_language">اللغة</string>
+    <string name="filter_artists">فنانون</string>
+
+    <string name="music_search_hint">ابحث عن مقطوعة أو فنان…</string>
+    <string name="tracks_count">%1$d مقطوعة</string>
+    <string name="music_cat_sport">رياضة</string>
+    <string name="music_cat_focus">تركيز</string>
+    <string name="music_cat_ambient">أجواء</string>
+    <string name="music_cat_electro">إلكترونية</string>
+    <string name="music_cat_chill">استرخاء</string>
+    <string name="music_cat_cinematic">سينمائية</string>
+    <string name="music_cat_acoustic">صوتية</string>
+    <string name="music_cat_world">عالمية وشرقية</string>
+
+    <string name="pod_search_hint">ابحث عن برنامج…</string>
+    <string name="books_search_hint">ابحث عن كتاب…</string>
+    <string name="episodes_count">%1$d حلقة</string>
+    <string name="chapters_count">%1$d فصل</string>
+    <string name="episodes_empty">لا توجد حلقات متاحة لهذا البرنامج.</string>
+    <string name="pod_cat_books">كتب صوتية</string>
+    <string name="pod_cat_languages">اللغات</string>
+    <string name="pod_cat_medicine">الطب</string>
+    <string name="pod_cat_tech">الإعلام الآلي</string>
+    <string name="pod_cat_theatre">مسرح وخيال</string>
+    <string name="pod_cat_science">علوم</string>
+    <string name="pod_cat_history">تاريخ</string>
+    <string name="pod_cat_sport">رياضة</string>
+    <string name="pod_cat_comedy">فكاهة</string>
+    <string name="pod_cat_culture">مجتمع</string>
 </resources>

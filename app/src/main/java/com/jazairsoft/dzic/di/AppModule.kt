@@ -4,9 +4,14 @@ import android.content.Context
 import androidx.room.Room
 import com.jazairsoft.dzic.BuildConfig
 import com.jazairsoft.dzic.data.local.DzicDatabase
+import com.jazairsoft.dzic.data.local.EpisodeProgressDao
 import com.jazairsoft.dzic.data.local.FavoriteDao
 import com.jazairsoft.dzic.data.local.HistoryDao
 import com.jazairsoft.dzic.data.local.PlaylistDao
+import com.jazairsoft.dzic.data.remote.CcMixterApi
+import com.jazairsoft.dzic.data.remote.ItunesApi
+import com.jazairsoft.dzic.data.remote.LibriVoxApi
+import com.jazairsoft.dzic.data.remote.OpenverseApi
 import com.jazairsoft.dzic.data.remote.RadioBrowserApi
 import dagger.Module
 import dagger.Provides
@@ -24,12 +29,12 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
-    /**
-     * Radio Browser impose un User-Agent identifiant l'application.
-     * all.api.radio-browser.info est un DNS round-robin sur les miroirs.
-     */
     private const val RADIO_BROWSER_BASE = "https://all.api.radio-browser.info/"
-    private const val USER_AGENT = "DZIC/0.1 (Android; Jazairsoft)"
+    private const val OPENVERSE_BASE = "https://api.openverse.org/"
+    private const val CCMIXTER_BASE = "https://ccmixter.org/"
+    private const val ITUNES_BASE = "https://itunes.apple.com/"
+    private const val LIBRIVOX_BASE = "https://librivox.org/"
+    private const val USER_AGENT = "DZIC/0.3 (Android; Jazairsoft)"
 
     @Provides
     @Singleton
@@ -52,14 +57,36 @@ object AppModule {
         return builder.build()
     }
 
-    @Provides
-    @Singleton
-    fun provideRadioBrowserApi(client: OkHttpClient): RadioBrowserApi = Retrofit.Builder()
-        .baseUrl(RADIO_BROWSER_BASE)
+    private fun retrofit(client: OkHttpClient, baseUrl: String): Retrofit = Retrofit.Builder()
+        .baseUrl(baseUrl)
         .client(client)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
-        .create(RadioBrowserApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideRadioBrowserApi(client: OkHttpClient): RadioBrowserApi =
+        retrofit(client, RADIO_BROWSER_BASE).create(RadioBrowserApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideOpenverseApi(client: OkHttpClient): OpenverseApi =
+        retrofit(client, OPENVERSE_BASE).create(OpenverseApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideCcMixterApi(client: OkHttpClient): CcMixterApi =
+        retrofit(client, CCMIXTER_BASE).create(CcMixterApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideItunesApi(client: OkHttpClient): ItunesApi =
+        retrofit(client, ITUNES_BASE).create(ItunesApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideLibriVoxApi(client: OkHttpClient): LibriVoxApi =
+        retrofit(client, LIBRIVOX_BASE).create(LibriVoxApi::class.java)
 
     @Provides
     @Singleton
@@ -76,4 +103,8 @@ object AppModule {
 
     @Provides
     fun provideHistoryDao(database: DzicDatabase): HistoryDao = database.historyDao()
+
+    @Provides
+    fun provideEpisodeProgressDao(database: DzicDatabase): EpisodeProgressDao =
+        database.episodeProgressDao()
 }

@@ -10,9 +10,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.LibraryBooks
 import androidx.compose.material.icons.filled.LibraryMusic
+import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.Radio
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -43,12 +44,16 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.jazairsoft.dzic.R
+import com.jazairsoft.dzic.ui.components.AboutDialog
+import com.jazairsoft.dzic.ui.components.DzicTopBar
 import com.jazairsoft.dzic.ui.components.FullPlayer
 import com.jazairsoft.dzic.ui.components.MiniPlayer
 import com.jazairsoft.dzic.ui.screens.library.LibraryScreen
 import com.jazairsoft.dzic.ui.screens.library.PlaylistDetailScreen
+import com.jazairsoft.dzic.ui.screens.music.MusicScreen
+import com.jazairsoft.dzic.ui.screens.podcasts.PodcastDetailScreen
+import com.jazairsoft.dzic.ui.screens.podcasts.PodcastsScreen
 import com.jazairsoft.dzic.ui.screens.radios.RadiosScreen
-import com.jazairsoft.dzic.ui.screens.search.SearchScreen
 import com.jazairsoft.dzic.ui.screens.settings.SettingsScreen
 
 private enum class Destination(
@@ -57,12 +62,14 @@ private enum class Destination(
     val icon: ImageVector
 ) {
     RADIOS("radios", R.string.tab_radios, Icons.Filled.Radio),
-    SEARCH("search", R.string.tab_search, Icons.Filled.Search),
+    MUSIC("music", R.string.tab_music, Icons.Filled.MusicNote),
+    PODCASTS("podcasts", R.string.tab_podcasts, Icons.AutoMirrored.Filled.LibraryBooks),
     LIBRARY("library", R.string.tab_library, Icons.Filled.LibraryMusic),
     SETTINGS("settings", R.string.tab_settings, Icons.Filled.Settings)
 }
 
 private const val PLAYLIST_ROUTE = "playlist/{playlistId}"
+private const val SHOW_ROUTE = "show"
 
 @Composable
 fun DzicApp(viewModel: AppViewModel = hiltViewModel()) {
@@ -72,10 +79,9 @@ fun DzicApp(viewModel: AppViewModel = hiltViewModel()) {
     val favoriteIds by viewModel.favoriteIds.collectAsStateWithLifecycle()
 
     var playerExpanded by rememberSaveable { mutableStateOf(false) }
+    var showAbout by rememberSaveable { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
 
-    // Une erreur de lecture silencieuse est indebogable pour l'utilisateur :
-    // on la remonte toujours a l'ecran.
     LaunchedEffect(playerState.errorMessage) {
         val message = playerState.errorMessage
         if (message != null) {
@@ -85,6 +91,7 @@ fun DzicApp(viewModel: AppViewModel = hiltViewModel()) {
     }
 
     Scaffold(
+        topBar = { DzicTopBar(onInfoClick = { showAbout = true }) },
         snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
             Column {
@@ -125,11 +132,20 @@ fun DzicApp(viewModel: AppViewModel = hiltViewModel()) {
                 .padding(innerPadding)
         ) {
             composable(Destination.RADIOS.route) { RadiosScreen() }
-            composable(Destination.SEARCH.route) { SearchScreen() }
+            composable(Destination.MUSIC.route) { MusicScreen() }
+            composable(Destination.PODCASTS.route) {
+                PodcastsScreen(onOpenShow = { show ->
+                    viewModel.selectShow(show)
+                    navController.navigate(SHOW_ROUTE)
+                })
+            }
             composable(Destination.LIBRARY.route) {
                 LibraryScreen(onOpenPlaylist = { id -> navController.navigate("playlist/$id") })
             }
             composable(Destination.SETTINGS.route) { SettingsScreen() }
+            composable(SHOW_ROUTE) {
+                PodcastDetailScreen(onBack = { navController.popBackStack() })
+            }
             composable(
                 route = PLAYLIST_ROUTE,
                 arguments = listOf(navArgument("playlistId") { type = NavType.StringType })
@@ -137,6 +153,10 @@ fun DzicApp(viewModel: AppViewModel = hiltViewModel()) {
                 PlaylistDetailScreen(onBack = { navController.popBackStack() })
             }
         }
+    }
+
+    if (showAbout) {
+        AboutDialog(onDismiss = { showAbout = false })
     }
 
     AnimatedVisibility(
@@ -151,6 +171,7 @@ fun DzicApp(viewModel: AppViewModel = hiltViewModel()) {
             onTogglePlayPause = viewModel::togglePlayPause,
             onNext = viewModel::next,
             onPrevious = viewModel::previous,
+            onSeekTo = viewModel::seekTo,
             onStop = {
                 viewModel.stop()
                 playerExpanded = false

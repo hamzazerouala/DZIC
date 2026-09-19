@@ -29,6 +29,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,6 +40,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.jazairsoft.dzic.R
+import com.jazairsoft.dzic.domain.model.formatDuration
 import com.jazairsoft.dzic.playback.PlayerUiState
 
 @Composable
@@ -49,6 +51,7 @@ fun FullPlayer(
     onTogglePlayPause: () -> Unit,
     onNext: () -> Unit,
     onPrevious: () -> Unit,
+    onSeekTo: (Long) -> Unit,
     onStop: () -> Unit,
     onToggleFavorite: () -> Unit
 ) {
@@ -105,6 +108,32 @@ fun FullPlayer(
             )
 
             Spacer(modifier = Modifier.height(12.dp))
+
+            if (state.isSeekable) {
+                Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp)) {
+                    Slider(
+                        value = state.progress,
+                        onValueChange = { fraction ->
+                            onSeekTo((fraction * state.durationMs).toLong())
+                        }
+                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = formatDuration(state.positionMs),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = formatDuration(state.durationMs),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
 
             Box(modifier = Modifier.height(28.dp), contentAlignment = Alignment.Center) {
                 if (state.isBuffering) {

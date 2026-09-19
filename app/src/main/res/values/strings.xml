@@ -76,4 +76,39 @@
     <string name="about_version">Version</string>
     <string name="about_sources">Stations fournies par Radio Browser, base communautaire ouverte. Aucune publicité, aucun compte, aucune collecte de données.</string>
     <string name="splash_publisher">Jazairsoft · www.jazairsoft.com</string>
+
+    <string name="tab_music">Musique</string>
+    <string name="tab_podcasts">Parlé</string>
+    <string name="splash_promise">Sans compte\nSans abonnement\nGratuit à vie</string>
+
+    <string name="filter_country">Pays</string>
+    <string name="filter_language">Langue</string>
+    <string name="filter_artists">Artistes</string>
+
+    <string name="music_search_hint">Rechercher un morceau, un artiste…</string>
+    <string name="tracks_count">%1$d morceaux</string>
+    <string name="music_cat_sport">Sport &amp; Cardio</string>
+    <string name="music_cat_focus">Concentration</string>
+    <string name="music_cat_ambient">Ambient</string>
+    <string name="music_cat_electro">Électro</string>
+    <string name="music_cat_chill">Détente</string>
+    <string name="music_cat_cinematic">Cinématique</string>
+    <string name="music_cat_acoustic">Acoustique</string>
+    <string name="music_cat_world">Monde &amp; Oriental</string>
+
+    <string name="pod_search_hint">Rechercher une émission…</string>
+    <string name="books_search_hint">Rechercher un livre…</string>
+    <string name="episodes_count">%1$d épisodes</string>
+    <string name="chapters_count">%1$d chapitres</string>
+    <string name="episodes_empty">Aucun épisode disponible pour cette émission.</string>
+    <string name="pod_cat_books">Livres audio</string>
+    <string name="pod_cat_languages">Langues</string>
+    <string name="pod_cat_medicine">Médecine</string>
+    <string name="pod_cat_tech">Informatique</string>
+    <string name="pod_cat_theatre">Théâtre &amp; Fiction</string>
+    <string name="pod_cat_science">Sciences</string>
+    <string name="pod_cat_history">Histoire</string>
+    <string name="pod_cat_sport">Sport</string>
+    <string name="pod_cat_comedy">Humour</string>
+    <string name="pod_cat_culture">Société</string>
 </resources>

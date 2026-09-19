@@ -76,4 +76,39 @@
     <string name="about_version">Version</string>
     <string name="about_sources">Stations provided by Radio Browser, an open community database. No ads, no account, no data collection.</string>
     <string name="splash_publisher">Jazairsoft · www.jazairsoft.com</string>
+
+    <string name="tab_music">Music</string>
+    <string name="tab_podcasts">Spoken</string>
+    <string name="splash_promise">No account\nNo subscription\nFree forever</string>
+
+    <string name="filter_country">Country</string>
+    <string name="filter_language">Language</string>
+    <string name="filter_artists">Artists</string>
+
+    <string name="music_search_hint">Search a track, an artist…</string>
+    <string name="tracks_count">%1$d tracks</string>
+    <string name="music_cat_sport">Sport &amp; Cardio</string>
+    <string name="music_cat_focus">Focus</string>
+    <string name="music_cat_ambient">Ambient</string>
+    <string name="music_cat_electro">Electronic</string>
+    <string name="music_cat_chill">Chill</string>
+    <string name="music_cat_cinematic">Cinematic</string>
+    <string name="music_cat_acoustic">Acoustic</string>
+    <string name="music_cat_world">World &amp; Oriental</string>
+
+    <string name="pod_search_hint">Search a show…</string>
+    <string name="books_search_hint">Search a book…</string>
+    <string name="episodes_count">%1$d episodes</string>
+    <string name="chapters_count">%1$d chapters</string>
+    <string name="episodes_empty">No episodes available for this show.</string>
+    <string name="pod_cat_books">Audiobooks</string>
+    <string name="pod_cat_languages">Languages</string>
+    <string name="pod_cat_medicine">Medicine</string>
+    <string name="pod_cat_tech">Technology</string>
+    <string name="pod_cat_theatre">Drama &amp; Fiction</string>
+    <string name="pod_cat_science">Science</string>
+    <string name="pod_cat_history">History</string>
+    <string name="pod_cat_sport">Sport</string>
+    <string name="pod_cat_comedy">Comedy</string>
+    <string name="pod_cat_culture">Society</string>
 </resources>
