@@ -18,8 +18,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -63,8 +67,20 @@ fun DzicApp(viewModel: AppViewModel = hiltViewModel()) {
     val favoriteIds by viewModel.favoriteIds.collectAsStateWithLifecycle()
 
     var playerExpanded by rememberSaveable { mutableStateOf(false) }
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    // Une erreur de lecture silencieuse est indebogable pour l'utilisateur :
+    // on la remonte toujours a l'ecran.
+    LaunchedEffect(playerState.errorMessage) {
+        val message = playerState.errorMessage
+        if (message != null) {
+            snackbarHostState.showSnackbar(message, duration = SnackbarDuration.Long)
+            viewModel.clearError()
+        }
+    }
 
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
             Column {
                 MiniPlayer(

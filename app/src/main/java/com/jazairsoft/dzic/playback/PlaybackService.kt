@@ -4,6 +4,7 @@ import android.app.PendingIntent
 import android.content.Intent
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import androidx.annotation.OptIn
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
@@ -49,7 +50,11 @@ class PlaybackService : MediaSessionService() {
         val dataSourceFactory = DefaultDataSource.Factory(this, httpFactory)
 
         val player = ExoPlayer.Builder(this)
-            .setMediaSourceFactory(DefaultMediaSourceFactory(dataSourceFactory))
+            // RadioExtractorsFactory choisit l'extracteur d'apres le Content-Type
+            // renvoye par le serveur, pas d'apres l'extension de l'URL.
+            .setMediaSourceFactory(
+                DefaultMediaSourceFactory(dataSourceFactory, RadioExtractorsFactory())
+            )
             // true => ExoPlayer gere l'AudioFocus : pause sur appel entrant,
             // duck sur notification sonore, reprise ensuite.
             .setAudioAttributes(audioAttributes, true)
@@ -57,11 +62,16 @@ class PlaybackService : MediaSessionService() {
             .setWakeMode(C.WAKE_MODE_NETWORK)
             .build()
 
+        // Explicite : elimine toute ambiguite sur un volume interne a zero.
+        player.volume = 1f
+
         player.addListener(object : Player.Listener {
             override fun onPlayerError(error: PlaybackException) {
-                // Un flux radio peut tomber (reseau mobile instable, serveur qui
-                // coupe). On retente avec un backoff court plutot que d'abandonner.
-                if (retryCount < MAX_RETRIES) {
+                Log.e(TAG, "Erreur ExoPlayer: ${error.errorCodeName}", error)
+                // On ne retente que sur incident reseau. Un format non lisible
+                // ne deviendra pas lisible en reessayant : le relancer masquerait
+                // l'erreur au lieu de la remonter a l'utilisateur.
+                if (error.isRetriable() && retryCount < MAX_RETRIES) {
                     retryCount++
                     handler.postDelayed({
                         player.prepare()
@@ -115,9 +125,17 @@ class PlaybackService : MediaSessionService() {
         super.onDestroy()
     }
 
+    private fun PlaybackException.isRetriable(): Boolean = when (errorCode) {
+        PlaybackException.ERROR_CODE_IO_NETWORK_CONNECTION_FAILED,
+        PlaybackException.ERROR_CODE_IO_NETWORK_CONNECTION_TIMEOUT,
+        PlaybackException.ERROR_CODE_IO_UNSPECIFIED -> true
+        else -> false
+    }
+
     private companion object {
+        const val TAG = "DzicService"
         const val USER_AGENT = "DZIC/0.1 (Android; Jazairsoft)"
-        const val MAX_RETRIES = 5
+        const val MAX_RETRIES = 3
         const val RETRY_DELAY_MS = 2000L
     }
 }

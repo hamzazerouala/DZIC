@@ -26,6 +26,7 @@ class AppViewModel @Inject constructor(
     fun next() = playerManager.next()
     fun previous() = playerManager.previous()
     fun stop() = playerManager.stop()
+    fun clearError() = playerManager.clearError()
 
     fun toggleFavoriteCurrent() {
         val station = playerManager.state.value.station ?: return
