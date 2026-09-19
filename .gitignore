@@ -1,0 +1,21 @@
+*.iml
+.gradle/
+.kotlin/
+/local.properties
+/.idea/
+.DS_Store
+/build
+app/build/
+/captures
+.externalNativeBuild
+.cxx
+local.env
+.env
+*.apk
+*.aab
+*.keystore
+*.jks
+
+# Scripts et journaux de build locaux (chemins specifiques a la machine)
+_*.bat
+build_log.txt

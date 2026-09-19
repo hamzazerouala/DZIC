@@ -1,0 +1,7 @@
+# Copier ce fichier en local.properties (non versionne) et renseigner les valeurs.
+sdk.dir=C:\\Users\\Administrator\\AppData\\Local\\Android\\Sdk
+
+# Cles API (laisser vide tant qu'elles ne sont pas creees)
+JAMENDO_CLIENT_ID=
+PODCAST_INDEX_KEY=
+PODCAST_INDEX_SECRET=

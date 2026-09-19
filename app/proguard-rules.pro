@@ -1,0 +1,3 @@
+-keep class com.jazairsoft.dzic.data.remote.** { *; }
+-keepattributes Signature
+-keepattributes *Annotation*
