@@ -5,6 +5,8 @@ import androidx.room.Room
 import com.jazairsoft.dzic.BuildConfig
 import com.jazairsoft.dzic.data.local.DzicDatabase
 import com.jazairsoft.dzic.data.local.FavoriteDao
+import com.jazairsoft.dzic.data.local.HistoryDao
+import com.jazairsoft.dzic.data.local.PlaylistDao
 import com.jazairsoft.dzic.data.remote.RadioBrowserApi
 import dagger.Module
 import dagger.Provides
@@ -68,4 +70,10 @@ object AppModule {
 
     @Provides
     fun provideFavoriteDao(database: DzicDatabase): FavoriteDao = database.favoriteDao()
+
+    @Provides
+    fun providePlaylistDao(database: DzicDatabase): PlaylistDao = database.playlistDao()
+
+    @Provides
+    fun provideHistoryDao(database: DzicDatabase): HistoryDao = database.historyDao()
 }

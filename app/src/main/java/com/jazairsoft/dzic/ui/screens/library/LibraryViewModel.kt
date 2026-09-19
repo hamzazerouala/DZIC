@@ -1,12 +1,11 @@
-package com.jazairsoft.dzic.ui.screens.radios
+package com.jazairsoft.dzic.ui.screens.library
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jazairsoft.dzic.data.local.FavoritesRepository
+import com.jazairsoft.dzic.data.local.HistoryRepository
 import com.jazairsoft.dzic.data.local.PlaylistWithCount
 import com.jazairsoft.dzic.data.local.PlaylistsRepository
-import com.jazairsoft.dzic.data.remote.RadioBrowserRepository
-import com.jazairsoft.dzic.domain.model.RadioCategory
 import com.jazairsoft.dzic.domain.model.Station
 import com.jazairsoft.dzic.playback.PlayerManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,28 +17,25 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-data class RadiosUiState(
-    val isLoading: Boolean = true,
-    val error: Boolean = false,
-    val algerianStations: List<Station> = emptyList(),
-    val selectedCategory: RadioCategory? = null,
-    val categoryStations: List<Station> = emptyList(),
-    val isCategoryLoading: Boolean = false
-)
+enum class LibrarySection { FAVORITES, PLAYLISTS, HISTORY }
 
 @HiltViewModel
-class RadiosViewModel @Inject constructor(
-    private val repository: RadioBrowserRepository,
+class LibraryViewModel @Inject constructor(
     private val favoritesRepository: FavoritesRepository,
     private val playlistsRepository: PlaylistsRepository,
+    private val historyRepository: HistoryRepository,
     private val playerManager: PlayerManager
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(RadiosUiState())
-    val uiState: StateFlow<RadiosUiState> = _uiState.asStateFlow()
+    private val _section = MutableStateFlow(LibrarySection.FAVORITES)
+    val section: StateFlow<LibrarySection> = _section.asStateFlow()
 
+    /** Station en attente d'etre ajoutee a une playlist (dialogue ouvert). */
     private val _pendingStation = MutableStateFlow<Station?>(null)
     val pendingStation: StateFlow<Station?> = _pendingStation.asStateFlow()
+
+    val favorites: StateFlow<List<Station>> = favoritesRepository.favorites
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     val favoriteIds: StateFlow<Set<String>> = favoritesRepository.favoriteIds
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptySet())
@@ -47,48 +43,13 @@ class RadiosViewModel @Inject constructor(
     val playlists: StateFlow<List<PlaylistWithCount>> = playlistsRepository.playlists
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
+    val history: StateFlow<List<Station>> = historyRepository.recent
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
     val playerState = playerManager.state
 
-    init {
-        loadAlgeria()
-    }
-
-    fun loadAlgeria(forceRefresh: Boolean = false) {
-        viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true, error = false)
-            runCatching { repository.algerianStations(forceRefresh) }
-                .onSuccess { stations ->
-                    _uiState.value = _uiState.value.copy(
-                        isLoading = false,
-                        error = false,
-                        algerianStations = stations
-                    )
-                }
-                .onFailure {
-                    _uiState.value = _uiState.value.copy(isLoading = false, error = true)
-                }
-        }
-    }
-
-    fun selectCategory(category: RadioCategory?) {
-        if (category == null) {
-            _uiState.value = _uiState.value.copy(selectedCategory = null, categoryStations = emptyList())
-            return
-        }
-        _uiState.value = _uiState.value.copy(selectedCategory = category, isCategoryLoading = true)
-        viewModelScope.launch {
-            runCatching { repository.categoryStations(category) }
-                .onSuccess { stations ->
-                    _uiState.value = _uiState.value.copy(
-                        categoryStations = stations,
-                        isCategoryLoading = false,
-                        error = false
-                    )
-                }
-                .onFailure {
-                    _uiState.value = _uiState.value.copy(isCategoryLoading = false, error = true)
-                }
-        }
+    fun selectSection(value: LibrarySection) {
+        _section.value = value
     }
 
     fun play(station: Station, queue: List<Station>) = playerManager.play(station, queue)
@@ -121,5 +82,26 @@ class RadiosViewModel @Inject constructor(
             if (station != null) playlistsRepository.addStation(id, station)
             _pendingStation.value = null
         }
+    }
+
+    fun createPlaylist(name: String) {
+        if (name.isBlank()) return
+        viewModelScope.launch { playlistsRepository.create(name) }
+    }
+
+    fun deletePlaylist(playlistId: Long) {
+        viewModelScope.launch { playlistsRepository.delete(playlistId) }
+    }
+
+    fun renamePlaylist(playlistId: Long, name: String) {
+        viewModelScope.launch { playlistsRepository.rename(playlistId, name) }
+    }
+
+    fun clearHistory() {
+        viewModelScope.launch { historyRepository.clear() }
+    }
+
+    fun removeFromHistory(stationId: String) {
+        viewModelScope.launch { historyRepository.remove(stationId) }
     }
 }

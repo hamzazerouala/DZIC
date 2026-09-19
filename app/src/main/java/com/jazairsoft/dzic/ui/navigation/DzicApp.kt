@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.LibraryMusic
 import androidx.compose.material.icons.filled.Radio
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
@@ -36,14 +36,17 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.jazairsoft.dzic.R
 import com.jazairsoft.dzic.ui.components.FullPlayer
 import com.jazairsoft.dzic.ui.components.MiniPlayer
-import com.jazairsoft.dzic.ui.screens.favorites.FavoritesScreen
+import com.jazairsoft.dzic.ui.screens.library.LibraryScreen
+import com.jazairsoft.dzic.ui.screens.library.PlaylistDetailScreen
 import com.jazairsoft.dzic.ui.screens.radios.RadiosScreen
 import com.jazairsoft.dzic.ui.screens.search.SearchScreen
 import com.jazairsoft.dzic.ui.screens.settings.SettingsScreen
@@ -55,9 +58,11 @@ private enum class Destination(
 ) {
     RADIOS("radios", R.string.tab_radios, Icons.Filled.Radio),
     SEARCH("search", R.string.tab_search, Icons.Filled.Search),
-    FAVORITES("favorites", R.string.tab_favorites, Icons.Filled.Favorite),
+    LIBRARY("library", R.string.tab_library, Icons.Filled.LibraryMusic),
     SETTINGS("settings", R.string.tab_settings, Icons.Filled.Settings)
 }
+
+private const val PLAYLIST_ROUTE = "playlist/{playlistId}"
 
 @Composable
 fun DzicApp(viewModel: AppViewModel = hiltViewModel()) {
@@ -121,8 +126,16 @@ fun DzicApp(viewModel: AppViewModel = hiltViewModel()) {
         ) {
             composable(Destination.RADIOS.route) { RadiosScreen() }
             composable(Destination.SEARCH.route) { SearchScreen() }
-            composable(Destination.FAVORITES.route) { FavoritesScreen() }
+            composable(Destination.LIBRARY.route) {
+                LibraryScreen(onOpenPlaylist = { id -> navController.navigate("playlist/$id") })
+            }
             composable(Destination.SETTINGS.route) { SettingsScreen() }
+            composable(
+                route = PLAYLIST_ROUTE,
+                arguments = listOf(navArgument("playlistId") { type = NavType.StringType })
+            ) {
+                PlaylistDetailScreen(onBack = { navController.popBackStack() })
+            }
         }
     }
 

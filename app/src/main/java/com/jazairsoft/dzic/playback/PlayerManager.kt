@@ -11,6 +11,7 @@ import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
+import com.jazairsoft.dzic.data.local.HistoryRepository
 import com.jazairsoft.dzic.data.remote.RadioBrowserRepository
 import com.jazairsoft.dzic.domain.model.Station
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -37,6 +38,7 @@ import javax.inject.Singleton
 class PlayerManager @Inject constructor(
     @ApplicationContext private val context: Context,
     private val repository: RadioBrowserRepository,
+    private val historyRepository: HistoryRepository,
     private val okHttpClient: OkHttpClient
 ) {
 
@@ -136,6 +138,7 @@ class PlayerManager @Inject constructor(
             player.prepare()
             player.play()
             repository.registerClick(station.id)
+            historyRepository.record(station)
         }
     }
 

@@ -31,6 +31,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jazairsoft.dzic.R
 import com.jazairsoft.dzic.domain.model.RadioCategory
+import com.jazairsoft.dzic.ui.components.AddToPlaylistDialog
 import com.jazairsoft.dzic.ui.components.StationRow
 
 @Composable
@@ -41,6 +42,8 @@ fun RadiosScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val favorites by viewModel.favoriteIds.collectAsStateWithLifecycle()
     val player by viewModel.playerState.collectAsStateWithLifecycle()
+    val playlists by viewModel.playlists.collectAsStateWithLifecycle()
+    val pendingStation by viewModel.pendingStation.collectAsStateWithLifecycle()
 
     val showCategory = state.selectedCategory != null
     val stations = if (showCategory) state.categoryStations else state.algerianStations
@@ -129,7 +132,8 @@ fun RadiosScreen(
                             isPlaying = player.station?.id == station.id,
                             isFavorite = favorites.contains(station.id),
                             onClick = { viewModel.play(station, stations) },
-                            onToggleFavorite = { viewModel.toggleFavorite(station) }
+                            onToggleFavorite = { viewModel.toggleFavorite(station) },
+                            onAddToPlaylist = { viewModel.requestAddToPlaylist(station) }
                         )
                     }
                     item {
@@ -144,5 +148,14 @@ fun RadiosScreen(
                 }
             }
         }
+    }
+
+    if (pendingStation != null) {
+        AddToPlaylistDialog(
+            playlists = playlists,
+            onDismiss = viewModel::dismissAddToPlaylist,
+            onSelect = viewModel::addPendingTo,
+            onCreate = viewModel::createPlaylistWithPending
+        )
     }
 }

@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jazairsoft.dzic.R
+import com.jazairsoft.dzic.ui.components.AddToPlaylistDialog
 import com.jazairsoft.dzic.ui.components.StationRow
 
 @Composable
@@ -35,6 +36,8 @@ fun SearchScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val favorites by viewModel.favoriteIds.collectAsStateWithLifecycle()
     val player by viewModel.playerState.collectAsStateWithLifecycle()
+    val playlists by viewModel.playlists.collectAsStateWithLifecycle()
+    val pendingStation by viewModel.pendingStation.collectAsStateWithLifecycle()
 
     Column(modifier = modifier.fillMaxSize()) {
         OutlinedTextField(
@@ -80,11 +83,21 @@ fun SearchScreen(
                             isPlaying = player.station?.id == station.id,
                             isFavorite = favorites.contains(station.id),
                             onClick = { viewModel.play(station, state.results) },
-                            onToggleFavorite = { viewModel.toggleFavorite(station) }
+                            onToggleFavorite = { viewModel.toggleFavorite(station) },
+                            onAddToPlaylist = { viewModel.requestAddToPlaylist(station) }
                         )
                     }
                 }
             }
         }
+    }
+
+    if (pendingStation != null) {
+        AddToPlaylistDialog(
+            playlists = playlists,
+            onDismiss = viewModel::dismissAddToPlaylist,
+            onSelect = viewModel::addPendingTo,
+            onCreate = viewModel::createPlaylistWithPending
+        )
     }
 }

@@ -3,6 +3,8 @@ package com.jazairsoft.dzic.ui.screens.search
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jazairsoft.dzic.data.local.FavoritesRepository
+import com.jazairsoft.dzic.data.local.PlaylistWithCount
+import com.jazairsoft.dzic.data.local.PlaylistsRepository
 import com.jazairsoft.dzic.data.remote.RadioBrowserRepository
 import com.jazairsoft.dzic.domain.model.Station
 import com.jazairsoft.dzic.playback.PlayerManager
@@ -29,14 +31,21 @@ data class SearchUiState(
 class SearchViewModel @Inject constructor(
     private val repository: RadioBrowserRepository,
     private val favoritesRepository: FavoritesRepository,
+    private val playlistsRepository: PlaylistsRepository,
     private val playerManager: PlayerManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SearchUiState())
     val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
 
+    private val _pendingStation = MutableStateFlow<Station?>(null)
+    val pendingStation: StateFlow<Station?> = _pendingStation.asStateFlow()
+
     val favoriteIds: StateFlow<Set<String>> = favoritesRepository.favoriteIds
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptySet())
+
+    val playlists: StateFlow<List<PlaylistWithCount>> = playlistsRepository.playlists
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     val playerState = playerManager.state
 
@@ -66,5 +75,31 @@ class SearchViewModel @Inject constructor(
 
     fun toggleFavorite(station: Station) {
         viewModelScope.launch { favoritesRepository.toggle(station) }
+    }
+
+    fun requestAddToPlaylist(station: Station) {
+        _pendingStation.value = station
+    }
+
+    fun dismissAddToPlaylist() {
+        _pendingStation.value = null
+    }
+
+    fun addPendingTo(playlistId: Long) {
+        val station = _pendingStation.value ?: return
+        viewModelScope.launch {
+            playlistsRepository.addStation(playlistId, station)
+            _pendingStation.value = null
+        }
+    }
+
+    fun createPlaylistWithPending(name: String) {
+        if (name.isBlank()) return
+        val station = _pendingStation.value
+        viewModelScope.launch {
+            val id = playlistsRepository.create(name)
+            if (station != null) playlistsRepository.addStation(id, station)
+            _pendingStation.value = null
+        }
     }
 }

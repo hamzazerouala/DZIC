@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">DZIC</string>
+    <string name="app_tagline">إذاعات وموسيقى حرّة الحقوق</string>
+
     <string name="tab_radios">الإذاعات</string>
     <string name="tab_search">بحث</string>
     <string name="tab_favorites">المفضّلة</string>
+    <string name="tab_library">المكتبة</string>
     <string name="tab_settings">الإعدادات</string>
+
     <string name="section_algeria">إذاعات جزائرية</string>
     <string name="cat_sport">رياضة وتحفيز</string>
     <string name="cat_chill">استرخاء</string>
@@ -15,6 +19,7 @@
     <string name="cat_classical">كلاسيكية</string>
     <string name="cat_world">شرقية وراي</string>
     <string name="cat_news">أخبار عامة</string>
+
     <string name="search_hint">ابحث عن إذاعة…</string>
     <string name="search_empty">اكتب اسم إذاعة لبدء البحث.</string>
     <string name="no_result">لا توجد نتائج.</string>
@@ -22,6 +27,7 @@
     <string name="loading">جارٍ التحميل…</string>
     <string name="retry">إعادة المحاولة</string>
     <string name="error_network">تعذّر الاتصال. تحقّق من الشبكة.</string>
+
     <string name="play">تشغيل</string>
     <string name="pause">إيقاف مؤقّت</string>
     <string name="previous">السابق</string>
@@ -31,18 +37,43 @@
     <string name="unlike">إزالة من المفضّلة</string>
     <string name="live">مباشر</string>
     <string name="buffering">جارٍ التحميل…</string>
+    <string name="open_player">فتح المشغّل</string>
+    <string name="close">إغلاق</string>
+    <string name="back">رجوع</string>
+    <string name="cancel">إلغاء</string>
+    <string name="create">إنشاء</string>
+    <string name="remove">إزالة</string>
+    <string name="more_actions">خيارات أخرى</string>
+    <string name="stations_count">%1$d محطة</string>
+
+    <string name="playlists">قوائم التشغيل</string>
+    <string name="history">السجل</string>
+    <string name="new_playlist">قائمة تشغيل جديدة</string>
+    <string name="playlist_name">اسم القائمة</string>
+    <string name="add_to_playlist">إضافة إلى قائمة تشغيل</string>
+    <string name="delete_playlist">حذف القائمة</string>
+    <string name="playlists_empty">لا توجد قوائم. اضغط + لإنشاء واحدة.</string>
+    <string name="playlist_empty">هذه القائمة فارغة. أضف محطات من أي شاشة.</string>
+    <string name="history_empty">لم يتم تشغيل أي شيء بعد.</string>
+    <string name="clear_history">مسح السجل</string>
+    <string name="reorder">إعادة الترتيب</string>
+    <string name="reorder_hint">اضغط مطوّلاً على محطة لتحريكها.</string>
+
+    <string name="settings_language">لغة التطبيق</string>
+    <string name="language_system">حسب النظام</string>
     <string name="settings_theme">المظهر</string>
-    <string name="settings_theme_system">حسب النظام</string>
-    <string name="settings_theme_light">فاتح</string>
-    <string name="settings_theme_dark">داكن</string>
     <string name="settings_battery">السماح بالتشغيل في الخلفية</string>
     <string name="settings_battery_desc">استثنِ DZIC من تحسينات البطارية حتى لا يوقف النظام التشغيل عند إطفاء الشاشة.</string>
     <string name="settings_battery_action">ضبط</string>
     <string name="settings_storage_title">البيانات المحلية</string>
     <string name="settings_storage_desc">لا يتطلّب DZIC أي حساب. تُحفظ المفضّلات وقوائم التشغيل والسجل على هذا الجهاز فقط وتُفقد عند حذف التطبيق أو تغيير الهاتف.</string>
     <string name="settings_about">حول التطبيق</string>
-    <string name="settings_about_desc">DZIC — موسيقى وإذاعات حرّة الحقوق. المصدر: Radio Browser. بدون إعلانات وبدون حساب.</string>
-    <string name="open_player">فتح المشغّل</string>
-    <string name="close">إغلاق</string>
-    <string name="stations_count">%1$d محطة</string>
+
+    <string name="about_action">حول التطبيق</string>
+    <string name="about_publisher">الناشر</string>
+    <string name="about_website">الموقع</string>
+    <string name="about_developer">المطوّر</string>
+    <string name="about_version">الإصدار</string>
+    <string name="about_sources">المحطات مقدّمة من Radio Browser، قاعدة بيانات مجتمعية مفتوحة. بدون إعلانات، بدون حساب، وبدون جمع بيانات.</string>
+    <string name="splash_publisher">Jazairsoft · www.jazairsoft.com</string>
 </resources>

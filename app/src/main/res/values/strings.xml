@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">DZIC</string>
+    <string name="app_tagline">Radios et musique libres de droits</string>
+
     <string name="tab_radios">Radios</string>
     <string name="tab_search">Recherche</string>
     <string name="tab_favorites">Favoris</string>
+    <string name="tab_library">Bibliothèque</string>
     <string name="tab_settings">Réglages</string>
+
     <string name="section_algeria">Radios algériennes</string>
     <string name="cat_sport">Sport &amp; Motivation</string>
     <string name="cat_chill">Détente</string>
@@ -15,6 +19,7 @@
     <string name="cat_classical">Classique</string>
     <string name="cat_world">Monde, Raï &amp; Oriental</string>
     <string name="cat_news">Actualité générale</string>
+
     <string name="search_hint">Rechercher une radio…</string>
     <string name="search_empty">Saisissez un nom de station pour lancer la recherche.</string>
     <string name="no_result">Aucun résultat.</string>
@@ -22,6 +27,7 @@
     <string name="loading">Chargement…</string>
     <string name="retry">Réessayer</string>
     <string name="error_network">Connexion impossible. Vérifiez votre réseau.</string>
+
     <string name="play">Lecture</string>
     <string name="pause">Pause</string>
     <string name="previous">Précédent</string>
@@ -31,18 +37,43 @@
     <string name="unlike">Retirer des favoris</string>
     <string name="live">EN DIRECT</string>
     <string name="buffering">Mise en mémoire tampon…</string>
+    <string name="open_player">Ouvrir le lecteur</string>
+    <string name="close">Fermer</string>
+    <string name="back">Retour</string>
+    <string name="cancel">Annuler</string>
+    <string name="create">Créer</string>
+    <string name="remove">Retirer</string>
+    <string name="more_actions">Plus d\'actions</string>
+    <string name="stations_count">%1$d stations</string>
+
+    <string name="playlists">Playlists</string>
+    <string name="history">Historique</string>
+    <string name="new_playlist">Nouvelle playlist</string>
+    <string name="playlist_name">Nom de la playlist</string>
+    <string name="add_to_playlist">Ajouter à une playlist</string>
+    <string name="delete_playlist">Supprimer la playlist</string>
+    <string name="playlists_empty">Aucune playlist. Touchez + pour en créer une.</string>
+    <string name="playlist_empty">Cette playlist est vide. Ajoutez des stations depuis n\'importe quel écran.</string>
+    <string name="history_empty">Aucune écoute pour le moment.</string>
+    <string name="clear_history">Vider l\'historique</string>
+    <string name="reorder">Réorganiser</string>
+    <string name="reorder_hint">Appui long sur une station pour la déplacer.</string>
+
+    <string name="settings_language">Langue de l\'application</string>
+    <string name="language_system">Système</string>
     <string name="settings_theme">Thème</string>
-    <string name="settings_theme_system">Système</string>
-    <string name="settings_theme_light">Clair</string>
-    <string name="settings_theme_dark">Sombre</string>
     <string name="settings_battery">Autoriser la lecture en arrière-plan</string>
     <string name="settings_battery_desc">Exclure DZIC des optimisations de batterie pour éviter que le système coupe la lecture écran éteint.</string>
     <string name="settings_battery_action">Configurer</string>
     <string name="settings_storage_title">Données locales</string>
     <string name="settings_storage_desc">DZIC ne demande aucun compte. Vos favoris, playlists et historique sont enregistrés uniquement sur cet appareil et seront perdus en cas de désinstallation ou de changement de téléphone.</string>
     <string name="settings_about">À propos</string>
-    <string name="settings_about_desc">DZIC — musique et radios libres de droits. Sources : Radio Browser (base communautaire de stations). Aucune publicité, aucun compte.</string>
-    <string name="open_player">Ouvrir le lecteur</string>
-    <string name="close">Fermer</string>
-    <string name="stations_count">%1$d stations</string>
+
+    <string name="about_action">À propos</string>
+    <string name="about_publisher">Éditeur</string>
+    <string name="about_website">Site</string>
+    <string name="about_developer">Développeur</string>
+    <string name="about_version">Version</string>
+    <string name="about_sources">Stations fournies par Radio Browser, base communautaire ouverte. Aucune publicité, aucun compte, aucune collecte de données.</string>
+    <string name="splash_publisher">Jazairsoft · www.jazairsoft.com</string>
 </resources>
