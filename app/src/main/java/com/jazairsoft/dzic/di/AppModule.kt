@@ -9,7 +9,7 @@ import com.jazairsoft.dzic.data.local.EpisodeProgressDao
 import com.jazairsoft.dzic.data.local.FavoriteDao
 import com.jazairsoft.dzic.data.local.HistoryDao
 import com.jazairsoft.dzic.data.local.PlaylistDao
-import com.jazairsoft.dzic.data.remote.CcMixterApi
+import com.jazairsoft.dzic.data.remote.InternetArchiveApi
 import com.jazairsoft.dzic.data.remote.ItunesApi
 import com.jazairsoft.dzic.data.remote.LibriVoxApi
 import com.jazairsoft.dzic.data.remote.OpenverseApi
@@ -32,10 +32,10 @@ object AppModule {
 
     private const val RADIO_BROWSER_BASE = "https://all.api.radio-browser.info/"
     private const val OPENVERSE_BASE = "https://api.openverse.org/"
-    private const val CCMIXTER_BASE = "https://ccmixter.org/"
+    private const val ARCHIVE_BASE = "https://archive.org/"
     private const val ITUNES_BASE = "https://itunes.apple.com/"
     private const val LIBRIVOX_BASE = "https://librivox.org/"
-    private const val USER_AGENT = "DZIC/0.3 (Android; Jazairsoft)"
+    private const val USER_AGENT = "DZIC/0.5 (Android; +https://github.com/hamzazerouala/DZIC)"
 
     @Provides
     @Singleton
@@ -76,8 +76,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideCcMixterApi(client: OkHttpClient): CcMixterApi =
-        retrofit(client, CCMIXTER_BASE).create(CcMixterApi::class.java)
+    fun provideInternetArchiveApi(client: OkHttpClient): InternetArchiveApi =
+        retrofit(client, ARCHIVE_BASE).create(InternetArchiveApi::class.java)
 
     @Provides
     @Singleton

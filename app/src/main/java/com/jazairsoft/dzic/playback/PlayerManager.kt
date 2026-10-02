@@ -14,6 +14,7 @@ import androidx.media3.session.SessionToken
 import com.jazairsoft.dzic.data.local.DownloadRepository
 import com.jazairsoft.dzic.data.local.EpisodeProgressRepository
 import com.jazairsoft.dzic.data.local.HistoryRepository
+import com.jazairsoft.dzic.data.remote.MusicRepository
 import com.jazairsoft.dzic.data.remote.RadioBrowserRepository
 import com.jazairsoft.dzic.domain.model.MediaKind
 import com.jazairsoft.dzic.domain.model.Station
@@ -44,6 +45,7 @@ import javax.inject.Singleton
 class PlayerManager @Inject constructor(
     @ApplicationContext private val context: Context,
     private val repository: RadioBrowserRepository,
+    private val musicRepository: MusicRepository,
     private val historyRepository: HistoryRepository,
     private val progressRepository: EpisodeProgressRepository,
     private val downloadRepository: DownloadRepository,
@@ -142,12 +144,31 @@ class PlayerManager @Inject constructor(
         _state.value = _state.value.copy(station = station, isBuffering = true, errorMessage = null)
 
         scope.launch {
+            var resolutionFailed = false
             val resolved = list.map { candidate ->
                 if (candidate.id != station.id) return@map candidate
                 // Un media deja telecharge se lit depuis le disque : zero donnee mobile.
                 val local = downloadRepository.localise(candidate)
-                if (local.streamUrl.startsWith("file://")) local
-                else local.copy(streamUrl = resolveStreamUrl(local.streamUrl))
+                if (local.streamUrl.startsWith("file://")) return@map local
+
+                // Internet Archive ne donne pas l'URL du fichier dans la recherche :
+                // on la resout ici, au moment du clic.
+                val direct = if (local.needsResolution) {
+                    musicRepository.resolveStream(local) ?: run { resolutionFailed = true; null }
+                } else {
+                    local.streamUrl
+                }
+                if (direct == null) local
+                else local.copy(streamUrl = resolveStreamUrl(direct), needsResolution = false)
+            }
+
+            if (resolutionFailed) {
+                _state.value = _state.value.copy(
+                    isBuffering = false,
+                    errorMessage = station.name + " : aucun fichier audio lisible dans cet item"
+                )
+                _unavailable.value = _unavailable.value + station.id
+                return@launch
             }
             val index = resolved.indexOfFirst { it.id == station.id }.coerceAtLeast(0)
 

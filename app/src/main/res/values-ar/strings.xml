@@ -124,4 +124,8 @@
     <string name="settings_wifi_only">التنزيل عبر الواي فاي فقط</string>
     <string name="tab_library_short">المكتبة</string>
     <string name="station_unavailable">خارج الخدمة</string>
+    <string name="music_cat_jazz">جاز</string>
+    <string name="music_cat_rock">روك</string>
+    <string name="music_cat_oriental">شرقية وعربية</string>
+    <string name="music_cat_classical">كلاسيكية</string>
 </resources>

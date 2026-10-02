@@ -65,54 +65,5 @@ data class OpenverseAudioDto(
     }
 }
 
-// ---------- ccMixter : remixes et instrumentaux Creative Commons ----------
-
-interface CcMixterApi {
-    @GET("api/query")
-    suspend fun query(
-        @Query("f") format: String = "json",
-        @Query("tags") tags: String? = null,
-        @Query("limit") limit: Int = 40,
-        @Query("sinceday") sinceDay: Int? = null
-    ): List<CcMixterUploadDto>
-}
-
-data class CcMixterUploadDto(
-    @SerializedName("upload_id") val uploadId: Long?,
-    @SerializedName("upload_name") val uploadName: String?,
-    @SerializedName("user_name") val userName: String?,
-    @SerializedName("license_name") val licenseName: String?,
-    @SerializedName("files") val files: List<CcMixterFileDto>?
-) {
-    fun toStation(): Station? {
-        val identifier = uploadId ?: return null
-        val label = uploadName?.trim()?.takeIf { it.isNotBlank() } ?: return null
-        val audio = files.orEmpty().firstOrNull { file ->
-            file.downloadUrl?.lowercase()?.endsWith(".mp3") == true
-        } ?: return null
-        val stream = audio.downloadUrl ?: return null
-        return Station(
-            id = "cc:$identifier",
-            name = label,
-            streamUrl = stream,
-            faviconUrl = null,
-            tags = emptyList(),
-            country = null,
-            countryCode = null,
-            language = null,
-            codec = "MP3",
-            bitrate = 0,
-            votes = 0,
-            clickCount = 0,
-            kind = MediaKind.TRACK,
-            artist = userName?.trim(),
-            durationMs = 0L,
-            sourceLabel = "ccMixter" + (licenseName?.let { " · $it" } ?: "")
-        )
-    }
-}
-
-data class CcMixterFileDto(
-    @SerializedName("file_name") val fileName: String?,
-    @SerializedName("download_url") val downloadUrl: String?
-)
+// ccMixter a ete retire : son API de recherche repond, mais les fichiers
+// audio renvoient 403 Forbidden, y compris sans en-tete Range. Inutilisable.

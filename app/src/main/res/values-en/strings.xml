@@ -124,4 +124,8 @@
     <string name="settings_wifi_only">Download over Wi-Fi only</string>
     <string name="tab_library_short">Library</string>
     <string name="station_unavailable">Offline</string>
+    <string name="music_cat_jazz">Jazz</string>
+    <string name="music_cat_rock">Rock</string>
+    <string name="music_cat_oriental">Oriental &amp; Arabic</string>
+    <string name="music_cat_classical">Classical</string>
 </resources>
