@@ -23,6 +23,7 @@ fun MediaGrid(
     onToggleFavorite: (Station) -> Unit,
     modifier: Modifier = Modifier,
     downloadStates: Map<String, String> = emptyMap(),
+    unavailableIds: Set<String> = emptySet(),
     onDownload: ((Station) -> Unit)? = null,
     onAddToPlaylist: ((Station) -> Unit)? = null,
     onRemove: ((Station) -> Unit)? = null,
@@ -41,6 +42,7 @@ fun MediaGrid(
                 onClick = { onPlay(station) },
                 onToggleFavorite = { onToggleFavorite(station) },
                 downloadState = downloadStates[station.id],
+                isUnavailable = unavailableIds.contains(station.id),
                 onDownload = onDownload?.let { action -> { action(station) } },
                 onAddToPlaylist = onAddToPlaylist?.let { action -> { action(station) } },
                 onRemove = onRemove?.let { action -> { action(station) } }

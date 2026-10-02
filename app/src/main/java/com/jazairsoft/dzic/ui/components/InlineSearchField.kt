@@ -1,6 +1,7 @@
 package com.jazairsoft.dzic.ui.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -8,6 +9,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,8 +40,10 @@ fun InlineSearchField(
         },
         singleLine = true,
         shape = RoundedCornerShape(14.dp),
+        textStyle = MaterialTheme.typography.bodyMedium,
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 14.dp, vertical = 6.dp)
+            .heightIn(min = 46.dp, max = 52.dp)
+            .padding(horizontal = 14.dp, vertical = 2.dp)
     )
 }

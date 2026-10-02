@@ -38,9 +38,15 @@ private val LightColors = lightColorScheme(
 )
 
 
+/**
+ * DZIC est sombre, quel que soit le reglage du systeme.
+ * C'est la convention du genre (Spotify, YouTube Music, Deezer) : les pochettes
+ * ressortent sur fond sombre, et une palette claire a moitie finie donnait une
+ * barre de navigation lavande qui jurait avec le vert de la marque.
+ */
 @Composable
 fun DzicTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    darkTheme: Boolean = true,
     content: @Composable () -> Unit
 ) {
     val colors = if (darkTheme) DarkColors else LightColors

@@ -65,6 +65,7 @@ class RadiosViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     val playerState = playerManager.state
+    val unavailableIds = playerManager.unavailable
 
     private var searchJob: Job? = null
 

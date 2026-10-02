@@ -122,4 +122,6 @@
     <string name="settings_data_saver">Data saver</string>
     <string name="settings_data_saver_desc">Radio uses about 56 MB per hour at 128 kbps, 28 MB at 64 kbps. Downloading music over Wi-Fi and playing it offline uses nothing at all.</string>
     <string name="settings_wifi_only">Download over Wi-Fi only</string>
+    <string name="tab_library_short">Library</string>
+    <string name="station_unavailable">Offline</string>
 </resources>

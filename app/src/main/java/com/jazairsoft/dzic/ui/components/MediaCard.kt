@@ -63,6 +63,7 @@ fun MediaCard(
     onToggleFavorite: () -> Unit,
     modifier: Modifier = Modifier,
     downloadState: String? = null,
+    isUnavailable: Boolean = false,
     onDownload: (() -> Unit)? = null,
     onAddToPlaylist: (() -> Unit)? = null,
     onRemove: (() -> Unit)? = null
@@ -80,7 +81,28 @@ fun MediaCard(
                 .aspectRatio(1f)
                 .clip(RoundedCornerShape(16.dp))
         ) {
-            Artwork(station = station, modifier = Modifier.fillMaxSize())
+            Artwork(
+                station = station,
+                modifier = Modifier.fillMaxSize(),
+                dimmed = isUnavailable
+            )
+
+            if (isUnavailable) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .padding(6.dp)
+                        .clip(RoundedCornerShape(6.dp))
+                        .background(Color.Black.copy(alpha = 0.65f))
+                        .padding(horizontal = 6.dp, vertical = 2.dp)
+                ) {
+                    Text(
+                        text = stringResource(R.string.station_unavailable),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Color(0xFFFFB4A8)
+                    )
+                }
+            }
 
             if (isPlaying) {
                 Box(
@@ -205,7 +227,7 @@ fun MediaCard(
  * un degrade stable derive de l'identifiant, avec l'initiale.
  */
 @Composable
-fun Artwork(station: Station, modifier: Modifier = Modifier) {
+fun Artwork(station: Station, modifier: Modifier = Modifier, dimmed: Boolean = false) {
     val palette = placeholderColors(station.id)
     Box(
         modifier = modifier.background(Brush.linearGradient(palette)),
@@ -215,19 +237,33 @@ fun Artwork(station: Station, modifier: Modifier = Modifier) {
             AsyncImage(
                 model = station.faviconUrl,
                 contentDescription = station.name,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize()
+                // Une radio fournit un logo, pas une photo : le rogner coupe le
+                // texte du logo. Une pochette de morceau, elle, doit remplir.
+                contentScale = if (station.kind == MediaKind.RADIO) ContentScale.Fit
+                else ContentScale.Crop,
+                modifier = if (station.kind == MediaKind.RADIO)
+                    Modifier.fillMaxSize().padding(14.dp) else Modifier.fillMaxSize()
             )
         } else {
             Text(
-                text = station.name.trim().take(1).uppercase(),
+                text = station.initial(),
                 fontSize = 34.sp,
                 fontWeight = FontWeight.Black,
                 color = Color.White.copy(alpha = 0.92f)
             )
         }
+        if (dimmed) {
+            Box(modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.55f)))
+        }
     }
 }
+
+/**
+ * Premiere lettre reelle du nom. Beaucoup d'entrees Radio Browser commencent
+ * par un point, un espace ou un signe : prendre take(1) affichait "!" ou ".".
+ */
+private fun Station.initial(): String =
+    name.trim().firstOrNull { it.isLetterOrDigit() }?.uppercase() ?: "\u266A"
 
 /** Couleur stable pour un identifiant donne : la grille reste variee mais jamais aleatoire. */
 internal fun placeholderColors(id: String): List<Color> {

@@ -53,6 +53,7 @@ class MusicViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     val playerState = playerManager.state
+    val unavailableIds = playerManager.unavailable
 
     val downloadStates: StateFlow<Map<String, String>> = downloadRepository.states
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyMap())

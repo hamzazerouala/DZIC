@@ -48,6 +48,7 @@ fun RadiosScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val favorites by viewModel.favoriteIds.collectAsStateWithLifecycle()
     val player by viewModel.playerState.collectAsStateWithLifecycle()
+    val unavailable by viewModel.unavailableIds.collectAsStateWithLifecycle()
     val playlists by viewModel.playlists.collectAsStateWithLifecycle()
     val pendingStation by viewModel.pendingStation.collectAsStateWithLifecycle()
 
@@ -164,6 +165,7 @@ fun RadiosScreen(
                     favoriteIds = favorites,
                     onPlay = { viewModel.play(it, state.stations) },
                     onToggleFavorite = viewModel::toggleFavorite,
+                    unavailableIds = unavailable,
                     onAddToPlaylist = viewModel::requestAddToPlaylist
                 )
             }

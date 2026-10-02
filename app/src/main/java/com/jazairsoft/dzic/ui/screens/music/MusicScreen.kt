@@ -39,6 +39,7 @@ fun MusicScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val favorites by viewModel.favoriteIds.collectAsStateWithLifecycle()
     val player by viewModel.playerState.collectAsStateWithLifecycle()
+    val unavailable by viewModel.unavailableIds.collectAsStateWithLifecycle()
     val playlists by viewModel.playlists.collectAsStateWithLifecycle()
     val pendingStation by viewModel.pendingStation.collectAsStateWithLifecycle()
     val downloadStates by viewModel.downloadStates.collectAsStateWithLifecycle()
@@ -102,6 +103,7 @@ fun MusicScreen(
                     favoriteIds = favorites,
                     onPlay = { viewModel.play(it, state.tracks) },
                     onToggleFavorite = viewModel::toggleFavorite,
+                    unavailableIds = unavailable,
                     downloadStates = downloadStates,
                     onDownload = viewModel::download,
                     onAddToPlaylist = viewModel::requestAddToPlaylist

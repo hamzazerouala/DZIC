@@ -64,7 +64,7 @@ private enum class Destination(
     RADIOS("radios", R.string.tab_radios, Icons.Filled.Radio),
     MUSIC("music", R.string.tab_music, Icons.Filled.MusicNote),
     PODCASTS("podcasts", R.string.tab_podcasts, Icons.AutoMirrored.Filled.LibraryBooks),
-    LIBRARY("library", R.string.tab_library, Icons.Filled.LibraryMusic),
+    LIBRARY("library", R.string.tab_library_short, Icons.Filled.LibraryMusic),
     SETTINGS("settings", R.string.tab_settings, Icons.Filled.Settings)
 }
 
@@ -117,7 +117,13 @@ fun DzicApp(viewModel: AppViewModel = hiltViewModel()) {
                                 }
                             },
                             icon = { Icon(destination.icon, contentDescription = null) },
-                            label = { Text(stringResource(destination.labelRes)) }
+                            label = {
+                                Text(
+                                    text = stringResource(destination.labelRes),
+                                    maxLines = 1,
+                                    softWrap = false
+                                )
+                            }
                         )
                     }
                 }

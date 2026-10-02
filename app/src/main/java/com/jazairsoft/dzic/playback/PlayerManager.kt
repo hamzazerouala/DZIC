@@ -58,6 +58,15 @@ class PlayerManager @Inject constructor(
     private val _state = MutableStateFlow(PlayerUiState())
     val state: StateFlow<PlayerUiState> = _state.asStateFlow()
 
+    /**
+     * Medias dont la lecture a echoue pour une raison definitive (404, format).
+     * Beaucoup de stations referencees par Radio Browser sont hors service alors
+     * que la base les donne encore valides : on le signale dans la grille au lieu
+     * de laisser l'utilisateur retomber dessus.
+     */
+    private val _unavailable = MutableStateFlow<Set<String>>(emptySet())
+    val unavailable: StateFlow<Set<String>> = _unavailable.asStateFlow()
+
     private var queue: List<Station> = emptyList()
 
     /** Lecture demandee avant que le MediaController ne soit pret. */
@@ -70,10 +79,14 @@ class PlayerManager @Inject constructor(
 
         override fun onPlayerError(error: PlaybackException) {
             Log.e(TAG, "Erreur de lecture: ${error.errorCodeName}", error)
+            val failed = _state.value.station
+            if (failed != null && error.isDefinitive()) {
+                _unavailable.value = _unavailable.value + failed.id
+            }
             _state.value = _state.value.copy(
                 isPlaying = false,
                 isBuffering = false,
-                errorMessage = error.readableMessage()
+                errorMessage = error.readableMessage(failed?.name)
             )
         }
     }
@@ -243,7 +256,7 @@ class PlayerManager @Inject constructor(
             hasPrevious = player.hasPreviousMediaItem(),
             positionMs = player.currentPosition.coerceAtLeast(0L),
             durationMs = player.duration.takeIf { it > 0 } ?: 0L,
-            errorMessage = error?.readableMessage() ?: _state.value.errorMessage
+            errorMessage = error?.readableMessage(station?.name) ?: _state.value.errorMessage
         )
     }
 
@@ -300,21 +313,35 @@ class PlayerManager @Inject constructor(
     }
 }
 
-/** Message lisible a afficher : le code brut ne dit rien a l'utilisateur. */
-private fun PlaybackException.readableMessage(): String = when (errorCode) {
-    PlaybackException.ERROR_CODE_IO_NETWORK_CONNECTION_FAILED,
-    PlaybackException.ERROR_CODE_IO_NETWORK_CONNECTION_TIMEOUT ->
-        "Connexion au flux impossible (reseau)"
-    PlaybackException.ERROR_CODE_IO_BAD_HTTP_STATUS ->
-        "Le serveur a refuse la connexion"
-    PlaybackException.ERROR_CODE_IO_CLEARTEXT_NOT_PERMITTED ->
-        "Flux HTTP bloque par le systeme"
-    PlaybackException.ERROR_CODE_IO_FILE_NOT_FOUND ->
-        "Flux introuvable (source hors service)"
+/**
+ * Message lisible. Un 404 n'est pas un probleme de reseau : dire "reseau"
+ * envoie l'utilisateur verifier sa connexion pour rien.
+ */
+private fun PlaybackException.readableMessage(name: String?): String {
+    val who = name?.takeIf { it.isNotBlank() }?.let { "$it : " }.orEmpty()
+    return who + when (errorCode) {
+        PlaybackException.ERROR_CODE_IO_BAD_HTTP_STATUS,
+        PlaybackException.ERROR_CODE_IO_FILE_NOT_FOUND ->
+            "station hors service"
+        PlaybackException.ERROR_CODE_IO_NETWORK_CONNECTION_FAILED,
+        PlaybackException.ERROR_CODE_IO_NETWORK_CONNECTION_TIMEOUT ->
+            "serveur injoignable"
+        PlaybackException.ERROR_CODE_IO_CLEARTEXT_NOT_PERMITTED ->
+            "flux HTTP bloque par le systeme"
+        PlaybackException.ERROR_CODE_PARSING_CONTAINER_UNSUPPORTED,
+        PlaybackException.ERROR_CODE_PARSING_MANIFEST_UNSUPPORTED,
+        PlaybackException.ERROR_CODE_DECODING_FORMAT_UNSUPPORTED ->
+            "format audio non pris en charge"
+        else -> "lecture impossible ($errorCodeName)"
+    }
+}
+
+/** Erreurs qui ne se repareront pas d'elles-memes : on marque le media. */
+private fun PlaybackException.isDefinitive(): Boolean = when (errorCode) {
+    PlaybackException.ERROR_CODE_IO_BAD_HTTP_STATUS,
+    PlaybackException.ERROR_CODE_IO_FILE_NOT_FOUND,
     PlaybackException.ERROR_CODE_PARSING_CONTAINER_UNSUPPORTED,
-    PlaybackException.ERROR_CODE_PARSING_MANIFEST_UNSUPPORTED ->
-        "Format de flux non pris en charge"
-    PlaybackException.ERROR_CODE_DECODING_FORMAT_UNSUPPORTED ->
-        "Codec audio non pris en charge"
-    else -> "Lecture impossible ($errorCodeName)"
+    PlaybackException.ERROR_CODE_PARSING_MANIFEST_UNSUPPORTED,
+    PlaybackException.ERROR_CODE_DECODING_FORMAT_UNSUPPORTED -> true
+    else -> false
 }
