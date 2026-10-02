@@ -2,6 +2,8 @@ package com.jazairsoft.dzic.ui.screens.music
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.jazairsoft.dzic.data.local.DownloadOutcome
+import com.jazairsoft.dzic.data.local.DownloadRepository
 import com.jazairsoft.dzic.data.local.FavoritesRepository
 import com.jazairsoft.dzic.data.local.PlaylistWithCount
 import com.jazairsoft.dzic.data.local.PlaylistsRepository
@@ -34,6 +36,7 @@ class MusicViewModel @Inject constructor(
     private val repository: MusicRepository,
     private val favoritesRepository: FavoritesRepository,
     private val playlistsRepository: PlaylistsRepository,
+    private val downloadRepository: DownloadRepository,
     private val playerManager: PlayerManager
 ) : ViewModel() {
 
@@ -50,6 +53,23 @@ class MusicViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     val playerState = playerManager.state
+
+    val downloadStates: StateFlow<Map<String, String>> = downloadRepository.states
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyMap())
+
+    private val _notice = MutableStateFlow<Int?>(null)
+    val notice: StateFlow<Int?> = _notice.asStateFlow()
+
+    fun download(track: Station) {
+        _notice.value = when (downloadRepository.enqueue(track)) {
+            DownloadOutcome.Started -> com.jazairsoft.dzic.R.string.download_started
+            DownloadOutcome.NeedsWifi -> com.jazairsoft.dzic.R.string.download_needs_wifi
+            DownloadOutcome.NotDownloadable -> com.jazairsoft.dzic.R.string.download_not_possible
+            DownloadOutcome.AlreadyPresent -> com.jazairsoft.dzic.R.string.download_done
+        }
+    }
+
+    fun clearNotice() { _notice.value = null }
 
     private var searchJob: Job? = null
 

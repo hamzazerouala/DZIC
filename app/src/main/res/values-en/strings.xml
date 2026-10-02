@@ -111,4 +111,15 @@
     <string name="pod_cat_sport">Sport</string>
     <string name="pod_cat_comedy">Comedy</string>
     <string name="pod_cat_culture">Society</string>
+
+    <string name="download">Download</string>
+    <string name="downloads">Downloads</string>
+    <string name="downloads_empty">No downloads yet. Tap ⋮ on a track or episode to listen offline.</string>
+    <string name="download_started">Download started</string>
+    <string name="download_done">Already downloaded</string>
+    <string name="download_needs_wifi">Downloads are Wi-Fi only. Change this in Settings.</string>
+    <string name="download_not_possible">A radio is a continuous stream and cannot be downloaded.</string>
+    <string name="settings_data_saver">Data saver</string>
+    <string name="settings_data_saver_desc">Radio uses about 56 MB per hour at 128 kbps, 28 MB at 64 kbps. Downloading music over Wi-Fi and playing it offline uses nothing at all.</string>
+    <string name="settings_wifi_only">Download over Wi-Fi only</string>
 </resources>

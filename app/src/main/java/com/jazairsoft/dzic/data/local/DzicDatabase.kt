@@ -9,9 +9,10 @@ import androidx.room.RoomDatabase
         PlaylistEntity::class,
         PlaylistItemEntity::class,
         HistoryEntity::class,
-        EpisodeProgressEntity::class
+        EpisodeProgressEntity::class,
+        DownloadEntity::class
     ],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 abstract class DzicDatabase : RoomDatabase() {
@@ -19,4 +20,5 @@ abstract class DzicDatabase : RoomDatabase() {
     abstract fun playlistDao(): PlaylistDao
     abstract fun historyDao(): HistoryDao
     abstract fun episodeProgressDao(): EpisodeProgressDao
+    abstract fun downloadDao(): DownloadDao
 }

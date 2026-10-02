@@ -11,8 +11,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -40,6 +42,7 @@ import com.jazairsoft.dzic.R
 import com.jazairsoft.dzic.domain.model.PodcastCategory
 import com.jazairsoft.dzic.domain.model.PodcastShow
 import com.jazairsoft.dzic.ui.components.InlineSearchField
+import com.jazairsoft.dzic.ui.components.ShowCard
 import com.jazairsoft.dzic.ui.screens.radios.selectedChipColors
 
 @Composable
@@ -98,65 +101,21 @@ fun PodcastsScreen(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
-                else -> LazyColumn(modifier = Modifier.fillMaxSize()) {
+                else -> LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
+                    modifier = Modifier.fillMaxSize()
+                ) {
                     items(state.shows, key = { it.id }) { show ->
-                        ShowRow(show = show, onClick = { onOpenShow(show) })
+                        ShowCard(
+                            title = show.title,
+                            author = show.author,
+                            artworkUrl = show.artworkUrl,
+                            identifier = show.id,
+                            onClick = { onOpenShow(show) }
+                        )
                     }
                 }
-            }
-        }
-    }
-}
-
-@Composable
-private fun ShowRow(show: PodcastShow, onClick: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        Box(
-            modifier = Modifier
-                .size(56.dp)
-                .clip(RoundedCornerShape(14.dp))
-                .background(MaterialTheme.colorScheme.surfaceVariant),
-            contentAlignment = Alignment.Center
-        ) {
-            if (show.artworkUrl != null) {
-                AsyncImage(
-                    model = show.artworkUrl,
-                    contentDescription = show.title,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.size(56.dp)
-                )
-            } else {
-                Icon(
-                    imageVector = if (show.isAudiobook) Icons.AutoMirrored.Outlined.MenuBook
-                    else Icons.Outlined.Mic,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
-
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = show.title,
-                style = MaterialTheme.typography.titleMedium,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-            )
-            if (!show.author.isNullOrBlank()) {
-                Text(
-                    text = show.author,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
             }
         }
     }

@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -17,9 +15,11 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -28,7 +28,7 @@ import com.jazairsoft.dzic.R
 import com.jazairsoft.dzic.domain.model.MusicCategory
 import com.jazairsoft.dzic.ui.components.AddToPlaylistDialog
 import com.jazairsoft.dzic.ui.components.InlineSearchField
-import com.jazairsoft.dzic.ui.components.StationRow
+import com.jazairsoft.dzic.ui.components.MediaGrid
 import com.jazairsoft.dzic.ui.screens.radios.selectedChipColors
 
 @Composable
@@ -41,6 +41,15 @@ fun MusicScreen(
     val player by viewModel.playerState.collectAsStateWithLifecycle()
     val playlists by viewModel.playlists.collectAsStateWithLifecycle()
     val pendingStation by viewModel.pendingStation.collectAsStateWithLifecycle()
+    val downloadStates by viewModel.downloadStates.collectAsStateWithLifecycle()
+    val notice by viewModel.notice.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+
+    LaunchedEffect(notice) {
+        val message = notice ?: return@LaunchedEffect
+        android.widget.Toast.makeText(context, context.getString(message), android.widget.Toast.LENGTH_LONG).show()
+        viewModel.clearNotice()
+    }
 
     Column(modifier = modifier.fillMaxSize()) {
 
@@ -87,26 +96,16 @@ fun MusicScreen(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
-                else -> LazyColumn(modifier = Modifier.fillMaxSize()) {
-                    item {
-                        Text(
-                            text = stringResource(R.string.tracks_count, state.tracks.size),
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(start = 16.dp, top = 8.dp, bottom = 2.dp)
-                        )
-                    }
-                    items(state.tracks, key = { it.id }) { track ->
-                        StationRow(
-                            station = track,
-                            isPlaying = player.station?.id == track.id,
-                            isFavorite = favorites.contains(track.id),
-                            onClick = { viewModel.play(track, state.tracks) },
-                            onToggleFavorite = { viewModel.toggleFavorite(track) },
-                            onAddToPlaylist = { viewModel.requestAddToPlaylist(track) }
-                        )
-                    }
-                }
+                else -> MediaGrid(
+                    items = state.tracks,
+                    playingId = player.station?.id,
+                    favoriteIds = favorites,
+                    onPlay = { viewModel.play(it, state.tracks) },
+                    onToggleFavorite = viewModel::toggleFavorite,
+                    downloadStates = downloadStates,
+                    onDownload = viewModel::download,
+                    onAddToPlaylist = viewModel::requestAddToPlaylist
+                )
             }
         }
     }

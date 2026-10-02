@@ -2,6 +2,7 @@ package com.jazairsoft.dzic.ui.screens.library
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.jazairsoft.dzic.data.local.DownloadRepository
 import com.jazairsoft.dzic.data.local.FavoritesRepository
 import com.jazairsoft.dzic.data.local.HistoryRepository
 import com.jazairsoft.dzic.data.local.PlaylistWithCount
@@ -17,13 +18,14 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-enum class LibrarySection { FAVORITES, PLAYLISTS, HISTORY }
+enum class LibrarySection { FAVORITES, PLAYLISTS, DOWNLOADS, HISTORY }
 
 @HiltViewModel
 class LibraryViewModel @Inject constructor(
     private val favoritesRepository: FavoritesRepository,
     private val playlistsRepository: PlaylistsRepository,
     private val historyRepository: HistoryRepository,
+    private val downloadRepository: DownloadRepository,
     private val playerManager: PlayerManager
 ) : ViewModel() {
 
@@ -45,6 +47,16 @@ class LibraryViewModel @Inject constructor(
 
     val history: StateFlow<List<Station>> = historyRepository.recent
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    val downloads: StateFlow<List<Station>> = downloadRepository.completed
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    val downloadStates: StateFlow<Map<String, String>> = downloadRepository.states
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyMap())
+
+    fun removeDownload(id: String) {
+        viewModelScope.launch { downloadRepository.remove(id) }
+    }
 
     val playerState = playerManager.state
 

@@ -11,6 +11,7 @@ import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
+import com.jazairsoft.dzic.data.local.DownloadRepository
 import com.jazairsoft.dzic.data.local.EpisodeProgressRepository
 import com.jazairsoft.dzic.data.local.HistoryRepository
 import com.jazairsoft.dzic.data.remote.RadioBrowserRepository
@@ -45,6 +46,7 @@ class PlayerManager @Inject constructor(
     private val repository: RadioBrowserRepository,
     private val historyRepository: HistoryRepository,
     private val progressRepository: EpisodeProgressRepository,
+    private val downloadRepository: DownloadRepository,
     private val okHttpClient: OkHttpClient
 ) {
 
@@ -128,8 +130,11 @@ class PlayerManager @Inject constructor(
 
         scope.launch {
             val resolved = list.map { candidate ->
-                if (candidate.id == station.id) candidate.copy(streamUrl = resolveStreamUrl(candidate.streamUrl))
-                else candidate
+                if (candidate.id != station.id) return@map candidate
+                // Un media deja telecharge se lit depuis le disque : zero donnee mobile.
+                val local = downloadRepository.localise(candidate)
+                if (local.streamUrl.startsWith("file://")) local
+                else local.copy(streamUrl = resolveStreamUrl(local.streamUrl))
             }
             val index = resolved.indexOfFirst { it.id == station.id }.coerceAtLeast(0)
 

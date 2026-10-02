@@ -11,9 +11,6 @@
     android:viewportWidth="512"
     android:viewportHeight="512">
 
-    <!-- 0.66 : zone sure de l'icone adaptative (72dp utiles sur 108dp). -->
-    <group android:scaleX="0.66" android:scaleY="0.66" android:translateX="87" android:translateY="87">
-
     <path android:pathData="M142,102 h112 a154,154 0 0 1 0,308 h-112 z">
         <aapt:attr name="android:fillColor">
             <gradient
@@ -54,5 +51,4 @@
             </gradient>
         </aapt:attr>
     </path>
-    </group>
 </vector>

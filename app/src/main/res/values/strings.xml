@@ -111,4 +111,15 @@
     <string name="pod_cat_sport">Sport</string>
     <string name="pod_cat_comedy">Humour</string>
     <string name="pod_cat_culture">Société</string>
+
+    <string name="download">Télécharger</string>
+    <string name="downloads">Téléchargements</string>
+    <string name="downloads_empty">Aucun téléchargement. Touchez ⋮ sur un morceau ou un épisode pour l\'écouter hors connexion.</string>
+    <string name="download_started">Téléchargement lancé</string>
+    <string name="download_done">Déjà téléchargé</string>
+    <string name="download_needs_wifi">Téléchargement en Wi-Fi uniquement. Changez l\'option dans les Réglages.</string>
+    <string name="download_not_possible">Une radio est un flux continu : elle ne peut pas être téléchargée.</string>
+    <string name="settings_data_saver">Économie de données</string>
+    <string name="settings_data_saver_desc">La radio consomme environ 56 Mo par heure en 128 kbps, 28 Mo en 64 kbps. Télécharger la musique en Wi-Fi puis l\'écouter hors connexion ne consomme rien du tout.</string>
+    <string name="settings_wifi_only">Télécharger en Wi-Fi uniquement</string>
 </resources>

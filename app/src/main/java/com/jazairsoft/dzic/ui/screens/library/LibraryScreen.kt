@@ -41,7 +41,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jazairsoft.dzic.R
 import com.jazairsoft.dzic.ui.components.AddToPlaylistDialog
-import com.jazairsoft.dzic.ui.components.StationRow
+import com.jazairsoft.dzic.ui.components.MediaGrid
 
 @Composable
 fun LibraryScreen(
@@ -56,6 +56,8 @@ fun LibraryScreen(
     val history by viewModel.history.collectAsStateWithLifecycle()
     val player by viewModel.playerState.collectAsStateWithLifecycle()
     val pendingStation by viewModel.pendingStation.collectAsStateWithLifecycle()
+    val downloads by viewModel.downloads.collectAsStateWithLifecycle()
+    val downloadStates by viewModel.downloadStates.collectAsStateWithLifecycle()
 
     var showCreateDialog by remember { mutableStateOf(false) }
 
@@ -93,6 +95,7 @@ fun LibraryScreen(
         ) {
             SectionChip(LibrarySection.FAVORITES, R.string.tab_favorites, section, viewModel::selectSection)
             SectionChip(LibrarySection.PLAYLISTS, R.string.playlists, section, viewModel::selectSection)
+            SectionChip(LibrarySection.DOWNLOADS, R.string.downloads, section, viewModel::selectSection)
             SectionChip(LibrarySection.HISTORY, R.string.history, section, viewModel::selectSection)
         }
 
@@ -106,6 +109,18 @@ fun LibraryScreen(
                     onPlay = { viewModel.play(it, favorites) },
                     onToggleFavorite = viewModel::toggleFavorite,
                     onAddToPlaylist = viewModel::requestAddToPlaylist
+                )
+
+                LibrarySection.DOWNLOADS -> StationList(
+                    stations = downloads,
+                    emptyText = stringResource(R.string.downloads_empty),
+                    playingId = player.station?.id,
+                    favoriteIds = favoriteIds,
+                    downloadStates = downloadStates,
+                    onPlay = { viewModel.play(it, downloads) },
+                    onToggleFavorite = viewModel::toggleFavorite,
+                    onAddToPlaylist = viewModel::requestAddToPlaylist,
+                    onRemove = { viewModel.removeDownload(it.id) }
                 )
 
                 LibrarySection.HISTORY -> StationList(
@@ -237,25 +252,23 @@ private fun StationList(
     onPlay: (com.jazairsoft.dzic.domain.model.Station) -> Unit,
     onToggleFavorite: (com.jazairsoft.dzic.domain.model.Station) -> Unit,
     onAddToPlaylist: (com.jazairsoft.dzic.domain.model.Station) -> Unit,
+    downloadStates: Map<String, String> = emptyMap(),
     onRemove: ((com.jazairsoft.dzic.domain.model.Station) -> Unit)? = null
 ) {
     if (stations.isEmpty()) {
         EmptyState(emptyText)
         return
     }
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
-        items(stations, key = { it.id }) { station ->
-            StationRow(
-                station = station,
-                isPlaying = playingId == station.id,
-                isFavorite = favoriteIds.contains(station.id),
-                onClick = { onPlay(station) },
-                onToggleFavorite = { onToggleFavorite(station) },
-                onAddToPlaylist = { onAddToPlaylist(station) },
-                onRemove = onRemove?.let { remove -> { remove(station) } }
-            )
-        }
-    }
+    MediaGrid(
+        items = stations,
+        playingId = playingId,
+        favoriteIds = favoriteIds,
+        onPlay = onPlay,
+        onToggleFavorite = onToggleFavorite,
+        downloadStates = downloadStates,
+        onAddToPlaylist = onAddToPlaylist,
+        onRemove = onRemove
+    )
 }
 
 @Composable

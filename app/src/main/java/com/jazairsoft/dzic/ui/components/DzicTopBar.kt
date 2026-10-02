@@ -56,19 +56,11 @@ fun DzicTopBar(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            Box(
-                modifier = Modifier
-                    .size(32.dp)
-                    .clip(RoundedCornerShape(9.dp))
-                    .background(MaterialTheme.colorScheme.surfaceVariant),
-                contentAlignment = Alignment.Center
-            ) {
-                Image(
-                    painter = painterResource(R.drawable.ic_launcher_foreground),
-                    contentDescription = null,
-                    modifier = Modifier.size(38.dp)
-                )
-            }
+            Image(
+                painter = painterResource(R.drawable.ic_dzic_mark),
+                contentDescription = null,
+                modifier = Modifier.size(30.dp)
+            )
 
             Column(modifier = Modifier.weight(1f)) {
                 Text(

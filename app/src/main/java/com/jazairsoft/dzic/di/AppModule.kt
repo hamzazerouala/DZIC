@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.jazairsoft.dzic.BuildConfig
 import com.jazairsoft.dzic.data.local.DzicDatabase
+import com.jazairsoft.dzic.data.local.DownloadDao
 import com.jazairsoft.dzic.data.local.EpisodeProgressDao
 import com.jazairsoft.dzic.data.local.FavoriteDao
 import com.jazairsoft.dzic.data.local.HistoryDao
@@ -107,4 +108,7 @@ object AppModule {
     @Provides
     fun provideEpisodeProgressDao(database: DzicDatabase): EpisodeProgressDao =
         database.episodeProgressDao()
+
+    @Provides
+    fun provideDownloadDao(database: DzicDatabase): DownloadDao = database.downloadDao()
 }

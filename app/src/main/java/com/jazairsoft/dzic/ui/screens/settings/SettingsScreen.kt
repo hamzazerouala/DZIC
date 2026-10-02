@@ -23,6 +23,7 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -43,6 +44,8 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
     val context = LocalContext.current
     var showAbout by remember { mutableStateOf(false) }
     var language by remember { mutableStateOf(AppPreferences.language(context)) }
+    var dataSaver by remember { mutableStateOf(AppPreferences.dataSaver(context)) }
+    var wifiOnly by remember { mutableStateOf(AppPreferences.downloadWifiOnly(context)) }
 
     Column(
         modifier = modifier
@@ -87,6 +90,28 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
         }
 
         SettingsCard(
+            title = stringResource(R.string.settings_data_saver),
+            description = stringResource(R.string.settings_data_saver_desc)
+        ) {
+            ToggleRow(
+                label = stringResource(R.string.settings_data_saver),
+                checked = dataSaver,
+                onCheckedChange = {
+                    dataSaver = it
+                    AppPreferences.setDataSaver(context, it)
+                }
+            )
+            ToggleRow(
+                label = stringResource(R.string.settings_wifi_only),
+                checked = wifiOnly,
+                onCheckedChange = {
+                    wifiOnly = it
+                    AppPreferences.setDownloadWifiOnly(context, it)
+                }
+            )
+        }
+
+        SettingsCard(
             title = stringResource(R.string.settings_battery),
             description = stringResource(R.string.settings_battery_desc),
             actionLabel = stringResource(R.string.settings_battery_action),
@@ -120,6 +145,23 @@ private fun languageLabel(tag: String): String = when (tag) {
     "ar" -> "العربية"
     "en" -> "English"
     else -> tag
+}
+
+@Composable
+private fun ToggleRow(label: String, checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 10.dp),
+        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.weight(1f)
+        )
+        Switch(checked = checked, onCheckedChange = onCheckedChange)
+    }
 }
 
 @Composable

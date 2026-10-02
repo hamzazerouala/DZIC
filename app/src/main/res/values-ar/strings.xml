@@ -111,4 +111,15 @@
     <string name="pod_cat_sport">رياضة</string>
     <string name="pod_cat_comedy">فكاهة</string>
     <string name="pod_cat_culture">مجتمع</string>
+
+    <string name="download">تنزيل</string>
+    <string name="downloads">التنزيلات</string>
+    <string name="downloads_empty">لا توجد تنزيلات. اضغط ⋮ على مقطوعة أو حلقة للاستماع دون اتصال.</string>
+    <string name="download_started">بدأ التنزيل</string>
+    <string name="download_done">تم تنزيله مسبقًا</string>
+    <string name="download_needs_wifi">التنزيل عبر الواي فاي فقط. غيّر الخيار في الإعدادات.</string>
+    <string name="download_not_possible">الإذاعة بث متواصل ولا يمكن تنزيلها.</string>
+    <string name="settings_data_saver">توفير البيانات</string>
+    <string name="settings_data_saver_desc">تستهلك الإذاعة نحو 56 ميغابايت في الساعة بجودة 128 كيلوبت، و28 ميغابايت بجودة 64 كيلوبت. تنزيل الموسيقى عبر الواي فاي والاستماع دون اتصال لا يستهلك شيئًا.</string>
+    <string name="settings_wifi_only">التنزيل عبر الواي فاي فقط</string>
 </resources>

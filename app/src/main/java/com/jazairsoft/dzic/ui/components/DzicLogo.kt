@@ -51,7 +51,7 @@ fun DzicLogo(
             contentAlignment = Alignment.Center
         ) {
             Image(
-                painter = painterResource(R.drawable.ic_launcher_foreground),
+                painter = painterResource(R.drawable.ic_dzic_mark),
                 contentDescription = null,
                 modifier = Modifier.size((markSize * 1.15f).dp)
             )

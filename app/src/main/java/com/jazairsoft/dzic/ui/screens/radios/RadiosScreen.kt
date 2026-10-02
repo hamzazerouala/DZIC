@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -40,7 +38,7 @@ import com.jazairsoft.dzic.domain.model.ArtistCatalog
 import com.jazairsoft.dzic.domain.model.RadioCategory
 import com.jazairsoft.dzic.ui.components.AddToPlaylistDialog
 import com.jazairsoft.dzic.ui.components.InlineSearchField
-import com.jazairsoft.dzic.ui.components.StationRow
+import com.jazairsoft.dzic.ui.components.MediaGrid
 
 @Composable
 fun RadiosScreen(
@@ -160,26 +158,14 @@ fun RadiosScreen(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
-                else -> LazyColumn(modifier = Modifier.fillMaxSize()) {
-                    item {
-                        Text(
-                            text = stringResource(R.string.stations_count, state.stations.size),
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(start = 16.dp, top = 8.dp, bottom = 2.dp)
-                        )
-                    }
-                    items(state.stations, key = { it.id }) { station ->
-                        StationRow(
-                            station = station,
-                            isPlaying = player.station?.id == station.id,
-                            isFavorite = favorites.contains(station.id),
-                            onClick = { viewModel.play(station, state.stations) },
-                            onToggleFavorite = { viewModel.toggleFavorite(station) },
-                            onAddToPlaylist = { viewModel.requestAddToPlaylist(station) }
-                        )
-                    }
-                }
+                else -> MediaGrid(
+                    items = state.stations,
+                    playingId = player.station?.id,
+                    favoriteIds = favorites,
+                    onPlay = { viewModel.play(it, state.stations) },
+                    onToggleFavorite = viewModel::toggleFavorite,
+                    onAddToPlaylist = viewModel::requestAddToPlaylist
+                )
             }
         }
     }

@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -70,16 +71,22 @@ class RadiosViewModel @Inject constructor(
     init {
         apply(RadioFilter.Algeria)
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(
-                countries = repository.countries(),
-                languages = repository.languages()
-            )
+            // On resout d'abord, on publie ensuite, et via update{} qui est atomique.
+            //
+            // Ecrire _uiState.value = _uiState.value.copy(countries = repository.countries())
+            // evaluerait le receveur AVANT l'appel suspendu : l'etat serait photographie a
+            // l'instant zero (stations vides, isLoading a true) puis reecrit plusieurs
+            // secondes plus tard, ecrasant les stations chargees entre-temps. C'est ce qui
+            // empechait l'affichage initial des radios algeriennes.
+            val fetchedCountries = runCatching { repository.countries() }.getOrDefault(emptyList())
+            val fetchedLanguages = runCatching { repository.languages() }.getOrDefault(emptyList())
+            _uiState.update { it.copy(countries = fetchedCountries, languages = fetchedLanguages) }
         }
     }
 
     fun apply(filter: RadioFilter, forceRefresh: Boolean = false) {
         searchJob?.cancel()
-        _uiState.value = _uiState.value.copy(filter = filter, isLoading = true, error = false)
+        _uiState.update { it.copy(filter = filter, isLoading = true, error = false) }
         viewModelScope.launch {
             runCatching {
                 when (filter) {
@@ -92,20 +99,16 @@ class RadiosViewModel @Inject constructor(
                 }
             }
                 .onSuccess { stations ->
-                    _uiState.value = _uiState.value.copy(
-                        stations = stations,
-                        isLoading = false,
-                        error = false
-                    )
+                    _uiState.update { it.copy(stations = stations, isLoading = false, error = false) }
                 }
                 .onFailure {
-                    _uiState.value = _uiState.value.copy(isLoading = false, error = true)
+                    _uiState.update { it.copy(isLoading = false, error = true) }
                 }
         }
     }
 
     fun onQueryChange(value: String) {
-        _uiState.value = _uiState.value.copy(query = value)
+        _uiState.update { it.copy(query = value) }
         searchJob?.cancel()
         if (value.trim().length < 2) {
             if (_uiState.value.filter is RadioFilter.Search) apply(RadioFilter.Algeria)
